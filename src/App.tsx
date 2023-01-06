@@ -1,25 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import LoginPage from "./pages/LoginPage";
+import "./bootstrap.min.css";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useEffect } from "react";
+import { auth } from "./firebase";
+import { useContext } from "react";
+import { Context } from "./store/app-context";
+import { Button } from "react-bootstrap";
+import HomePage from "./pages/HomePage";
+import { getDoc } from "firebase/firestore";
 
 function App() {
+  const ctx = useContext(Context);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      ctx.onlogin(user.uid);
+    }
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="app">
+        {!ctx.isLoggedIn ? <LoginPage /> : ""}
+        {ctx.isLoggedIn ? (
+          <div className="chart-container">
+            <HomePage />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+    </>
   );
 }
 
