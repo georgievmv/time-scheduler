@@ -1,35 +1,32 @@
 import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import "./bootstrap.min.css";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "./store/app-context";
-import { Button } from "react-bootstrap";
 import HomePage from "./pages/HomePage";
-import { getDoc } from "firebase/firestore";
+import AddEvent from "./components/AddEvent";
+import LoadingBar from "./components/LoadingBar";
 
 function App() {
   const ctx = useContext(Context);
-
+  useEffect(() => {
+    ctx.setIsLoading(true);
+  }, []);
   onAuthStateChanged(auth, (user) => {
     if (user) {
       ctx.onlogin(user.uid);
     }
+    ctx.setIsLoading(false);
   });
 
   return (
     <>
       <div className="app">
         {!ctx.isLoggedIn ? <LoginPage /> : ""}
-        {ctx.isLoggedIn ? (
-          <div className="chart-container">
-            <HomePage />
-          </div>
-        ) : (
-          ""
-        )}
+        {ctx.isLoggedIn && ctx.adding ? <AddEvent /> : ""}
+        {ctx.isLoggedIn && !ctx.adding ? <HomePage /> : ""}
       </div>
     </>
   );

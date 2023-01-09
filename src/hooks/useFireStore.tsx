@@ -8,7 +8,6 @@ import {
 import { db } from "../firebase";
 import { useContext } from "react";
 import { Context } from "../store/app-context";
-import { Event } from "../components/Pie";
 
 const useFireStore = () => {
   const { uid } = useContext(Context);
