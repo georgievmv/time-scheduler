@@ -66,15 +66,21 @@ const AddEvent = () => {
     ctx.setData((prevState) => {
       return [...prevState, newEvent];
     });
+    console.log(newEvent);
   };
 
-  useEffect(() => {
-    firestore("updateDoc", { data: ctx.data });
+  const sendData = async () => {
+    await firestore("updateDoc", { data: ctx.data });
     if (!isIntial) {
       setIsInitial(true);
+      return;
     } else {
       ctx.setAdding(false);
     }
+  };
+
+  useEffect(() => {
+    sendData();
   }, [ctx.data]);
 
   const onCancelAdding = () => {

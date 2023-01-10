@@ -2,6 +2,7 @@ import {
   getDoc,
   updateDoc,
   doc,
+  deleteDoc,
   DocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";

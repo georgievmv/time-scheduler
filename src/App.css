@@ -3,10 +3,11 @@
 }
 
 .app {
-  height: 100vh;
   display: flex;
-  align-items: center;
+  margin-top: 5rem;
   justify-content: center;
+  margin-bottom: 5rem;
+  min-height: 80vh;
 }
 
 .home-page-container {
@@ -24,6 +25,15 @@
   width: 100%;
   height: 15px;
 }
+
 .bar-element:hover {
   cursor: pointer;
+}
+
+.bar-hover-container {
+  position: absolute;
+  left: 0px;
+  top: 65px;
+  z-index: 999;
+  width: fit-content;
 }

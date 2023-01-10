@@ -56,13 +56,13 @@ const LoginPage: React.FC = () => {
         <div className="form-container">
           <Form onSubmit={formSubmitHandler}>
             <Form.Group>
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-                type="text"
+                type="email"
                 placeholder="Enter your email"
               ></Form.Control>
             </Form.Group>
