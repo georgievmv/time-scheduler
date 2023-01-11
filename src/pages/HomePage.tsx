@@ -2,18 +2,19 @@ import React from "react";
 import Pie from "../components/Pie";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
-import { useContext } from "react";
 import { Context } from "../store/app-context";
-import { Button } from "react-bootstrap";
+import { Button, Row, Col } from "react-bootstrap";
 import useFireStore from "../hooks/useFireStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import EventList from "../components/EventList";
 import Bar from "../components/Bar";
 import LoadingBar from "../components/LoadingBar";
+import pieChartIcon from "../assets/pie-chart-fill.svg";
 
 const HomePage = () => {
   const ctx = useContext(Context);
   const firestore = useFireStore();
+  const [pieChart, setPieChart] = useState(false);
 
   const getData = async () => {
     const response = await firestore("getDoc");
@@ -44,7 +45,7 @@ const HomePage = () => {
         <LoadingBar />
       ) : (
         <div className="home-page-container">
-          <Bar />
+          {!pieChart ? <Bar /> : <Pie />}
           {ctx.data.length === 0 ? (
             <p style={{ textAlign: "center" }}>
               You haven`t added any events yet
@@ -55,14 +56,31 @@ const HomePage = () => {
             </div>
           )}
           <div style={{ textAlign: "center" }}>
-            <Button onClick={signOutHandler}>Logout</Button>
-            <Button
-              onClick={addNewTaskButtonHandler}
-              className="mx-3"
-              variant="secondary"
-            >
-              Add new task
-            </Button>
+            <Row>
+              <Col xl={4} m={4} sm={6} xs={6}>
+                <Button onClick={signOutHandler}>Log out</Button>
+              </Col>
+              <Col xl={4} m={4} sm={6} xs={6}>
+                <Button onClick={addNewTaskButtonHandler} variant="secondary">
+                  Add new task
+                </Button>
+              </Col>
+              <Col xl={4} m={4} sm={12} xs={12}>
+                <Button
+                  className="pie-chart-button"
+                  onClick={() => {
+                    setPieChart((prev) => !prev);
+                  }}
+                >
+                  <img
+                    style={{ marginRight: "0.5rem" }}
+                    src={pieChartIcon}
+                    alt=""
+                  />
+                  See pie chart
+                </Button>
+              </Col>
+            </Row>
           </div>
         </div>
       )}

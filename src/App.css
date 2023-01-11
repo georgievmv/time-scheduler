@@ -37,3 +37,9 @@
   z-index: 999;
   width: fit-content;
 }
+
+@media (max-width: 1200px) {
+  .pie-chart-button {
+    margin-top: 1rem;
+  }
+}

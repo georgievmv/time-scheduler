@@ -3,11 +3,10 @@ import LoginPage from "./pages/LoginPage";
 import "./bootstrap.min.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Context } from "./store/app-context";
 import HomePage from "./pages/HomePage";
 import AddEvent from "./components/AddEvent";
-import LoadingBar from "./components/LoadingBar";
 
 function App() {
   const ctx = useContext(Context);
