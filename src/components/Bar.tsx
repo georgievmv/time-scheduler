@@ -7,9 +7,6 @@ const Bar = () => {
   const ctx = useContext(Context);
   const [hover, setHover] = useState("");
   const [reformedData, setReformedData] = useState<any[]>([]);
-  useEffect(() => {
-    ctx.createLinearGradient();
-  }, [ctx.data]);
 
   useEffect(() => {
     if (ctx.data.length > 0) {

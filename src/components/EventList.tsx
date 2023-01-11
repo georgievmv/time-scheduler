@@ -9,7 +9,6 @@ import { Event } from "./Pie";
 const EventList: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
-  const [isIntial, setIsInitial] = useState(true);
   const firestore = useFireStore();
   const ctx = useContext(Context);
 

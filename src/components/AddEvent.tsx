@@ -13,7 +13,9 @@ const AddEvent = () => {
   const [endTime, setEndTime] = useState(800);
   const [eventTitle, setEventTitle] = useState("");
   const [eventAlreadyPlaned, setEventAlreadyPlaned] = useState(false);
-
+  const [linearGradientString, setLinearGradientString] = useState(
+    "linear-gradient(to right, #30115e 0%, #30115e 100%)"
+  );
   const firestore = useFireStore();
   const ctx = useContext(Context);
 
@@ -44,9 +46,41 @@ const AddEvent = () => {
   }, []);
 
   //Logic for showing red color for already taken hours
+  const createLinearGradient = () => {
+    const percentagesArr = ctx.data
+      .map((elem) => {
+        return {
+          startPercentage: Math.round(elem.start / 14.4),
+          endPercentage: Math.round(elem.end / 14.4),
+        };
+      })
+      .sort((a, b) => a.startPercentage - b.startPercentage);
+    let newString = "linear-gradient(to right";
+    if (percentagesArr) {
+      percentagesArr.forEach((elem, i) => {
+        if (percentagesArr.length === 1) {
+          newString += `, #30115e 0%, #30115e ${elem.startPercentage}%, red ${elem.startPercentage}%, red ${elem.endPercentage}%, #30115e ${elem.endPercentage}%, #30115e 100%`;
+        }
+        if (i + 1 < percentagesArr.length) {
+          if (elem.startPercentage !== 0) {
+            newString += `, #30115e 0%, #30115e ${elem.startPercentage}%, red ${elem.startPercentage}%, red ${elem.endPercentage}%`;
+          }
+          newString += `, red ${elem.startPercentage}%, red ${
+            elem.endPercentage
+          }%, #30115e ${elem.endPercentage}%, #30115e ${
+            percentagesArr[i + 1].startPercentage
+          }%`;
+        } else if (elem.endPercentage !== 100) {
+          newString += `, red ${elem.startPercentage}%, red ${elem.endPercentage}%, #30115e ${elem.endPercentage}%, #30115e 100%`;
+        }
+      });
+      console.log(newString);
+      setLinearGradientString(`${newString})`);
+    }
+  };
 
   useEffect(() => {
-    ctx.createLinearGradient();
+    createLinearGradient();
   }, []);
 
   ////////////////////////////////////////////////////
@@ -121,7 +155,7 @@ const AddEvent = () => {
         <Slider
           onChange={sliderChangeHandler}
           railStyle={{
-            background: ctx.linearGradientString,
+            background: linearGradientString,
             height: "7px",
           }}
           handleStyle={[
