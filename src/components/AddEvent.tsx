@@ -74,7 +74,6 @@ const AddEvent = () => {
           newString += `, red ${elem.startPercentage}%, red ${elem.endPercentage}%, #30115e ${elem.endPercentage}%, #30115e 100%`;
         }
       });
-      console.log(newString);
       setLinearGradientString(`${newString})`);
     }
   };

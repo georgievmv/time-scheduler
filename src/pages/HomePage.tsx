@@ -57,17 +57,24 @@ const HomePage = () => {
           )}
           <div style={{ textAlign: "center" }}>
             <Row>
-              <Col xl={4} m={4} sm={6} xs={6}>
-                <Button onClick={signOutHandler}>Log out</Button>
+              <Col xl={4} m={4} sm={4} xs={12}>
+                <Button className="mt-3" onClick={signOutHandler}>
+                  Log out
+                </Button>
               </Col>
-              <Col xl={4} m={4} sm={6} xs={6}>
-                <Button onClick={addNewTaskButtonHandler} variant="secondary">
+              <Col xl={4} m={4} sm={4} xs={12}>
+                <Button
+                  className="mt-3"
+                  onClick={addNewTaskButtonHandler}
+                  variant="secondary"
+                >
                   Add new task
                 </Button>
               </Col>
-              <Col xl={4} m={4} sm={12} xs={12}>
+              <Col xl={4} m={4} sm={4} xs={12}>
                 <Button
-                  className="pie-chart-button"
+                  disabled={ctx.data.length === 0}
+                  className="mt-3"
                   onClick={() => {
                     setPieChart((prev) => !prev);
                   }}
