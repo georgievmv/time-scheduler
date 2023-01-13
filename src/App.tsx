@@ -10,6 +10,9 @@ import AddEvent from "./components/AddEvent";
 
 function App() {
   const ctx = useContext(Context);
+  const today = `${new Date().getFullYear()}-${new Date().getDay()}-${
+    new Date().getMonth() + 1
+  }`;
   useEffect(() => {
     ctx.setIsLoading(true);
   }, []);

@@ -1,10 +1,5 @@
-export const timeTransformer = (time: number) => {
-  let hour = time / 60;
-  let minutes = ":30";
-  let roundedHour = Math.floor(hour).toString();
-  if (time % 60 == 0) {
-    minutes = ":00";
-  }
-  let newTime = `${roundedHour}${minutes}`;
-  return newTime;
+export const timeTransformer = (minutes: number) => {
+  const hour = Math.floor(minutes / 60);
+  const formattedMinutes = minutes % 60 == 0 ? "00" : "30";
+  return `${hour}:${formattedMinutes}`;
 };

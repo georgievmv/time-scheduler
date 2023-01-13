@@ -10,7 +10,7 @@ const EventList: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
-  const ctx = useContext(Context);
+  const { data, setData } = useContext(Context);
 
   const onClickHandler = (e: React.MouseEvent) => {
     if (!deleting) {
@@ -23,9 +23,9 @@ const EventList: React.FC = () => {
   };
 
   const deleteEventHandler = () => {
-    const newData = ctx.data.filter((elem) => elem.id !== parseInt(selectedId));
+    const newData = data.filter((elem) => elem.id !== parseInt(selectedId));
 
-    ctx.setData(newData);
+    setData(newData);
     sendData(newData);
   };
 
@@ -35,7 +35,7 @@ const EventList: React.FC = () => {
 
   return (
     <>
-      {ctx.data.map((elem) => {
+      {data.map((elem) => {
         return (
           <Card
             id={elem.id.toString()}
@@ -53,12 +53,10 @@ const EventList: React.FC = () => {
                 )}`}
               </Card.Text>
             </Card.Body>
-            {deleting && selectedId === elem.id.toString() ? (
+            {deleting && selectedId === elem.id.toString() && (
               <Button onClick={deleteEventHandler} variant="danger">
                 Delete
               </Button>
-            ) : (
-              ""
             )}
           </Card>
         );

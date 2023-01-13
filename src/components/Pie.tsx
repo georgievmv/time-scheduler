@@ -1,7 +1,6 @@
 import { PieChart } from "react-minimal-pie-chart";
 import { useContext } from "react";
 import { Context } from "../store/app-context";
-import { CollectionReference } from "@firebase/firestore";
 
 export type Event = {
   id: number;

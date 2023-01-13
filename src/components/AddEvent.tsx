@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { Form, Button } from "react-bootstrap";
 import { useState, useContext, useEffect } from "react";
 import { Context } from "../store/app-context";
@@ -6,48 +6,51 @@ import useFireStore from "../hooks/useFireStore";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { timeTransformer } from "../assets/timeTransformer";
+import { dataReformer } from "../assets/reformDataForBar";
+import BarHoverInfo from "./BarHoverInfo";
 
 const AddEvent = () => {
-  const [isIntial, setIsInitial] = useState(false);
+  const [hover, setHover] = useState("");
+  const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
   const [endTime, setEndTime] = useState(800);
   const [eventTitle, setEventTitle] = useState("");
-  const [eventAlreadyPlaned, setEventAlreadyPlaned] = useState(false);
-  const [linearGradientString, setLinearGradientString] = useState(
+  const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
+  /*  const [linearGradientString, setLinearGradientString] = useState(
     "linear-gradient(to right, #30115e 0%, #30115e 100%)"
-  );
+  ); */
   const firestore = useFireStore();
-  const ctx = useContext(Context);
+  const { data, setAdding, setData } = useContext(Context);
 
   const sliderChangeHandler = (value: any) => {
-    setEventAlreadyPlaned(false);
-    ctx.data.forEach((elem) => {
+    setIsEventAlreadyPlaned(false);
+    data.forEach((elem) => {
       if (
         (value[0] < elem.start && value[1] > elem.start) ||
-        (startTime > elem.start && startTime < elem.end) ||
-        (endTime < elem.end && endTime > elem.start)
+        (value[0] >= elem.start && value[0] < elem.end) ||
+        (value[1] < elem.end && value[1] > elem.start)
       ) {
-        setEventAlreadyPlaned(true);
+        setIsEventAlreadyPlaned(true);
       }
     });
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
   useEffect(() => {
-    ctx.data.forEach((elem) => {
+    data.forEach((elem) => {
       if (
         (startTime < elem.start && endTime > elem.start) ||
         (startTime > elem.start && startTime < elem.end) ||
         (endTime < elem.end && endTime > elem.start)
       ) {
-        setEventAlreadyPlaned(true);
+        setIsEventAlreadyPlaned(true);
       }
     });
   }, []);
 
   //Logic for showing red color for already taken hours
-  const createLinearGradient = () => {
-    const percentagesArr = ctx.data
+  /* const createLinearGradient = () => {
+    const percentagesArr = data
       .map((elem) => {
         return {
           startPercentage: Math.round(elem.start / 14.4),
@@ -76,11 +79,7 @@ const AddEvent = () => {
       });
       setLinearGradientString(`${newString})`);
     }
-  };
-
-  useEffect(() => {
-    createLinearGradient();
-  }, []);
+  }; */
 
   ////////////////////////////////////////////////////
   const formSubmitHandler = (e: React.FormEvent) => {
@@ -89,36 +88,44 @@ const AddEvent = () => {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     const value = (endTime - startTime) / 60;
     const newEvent = {
-      id: ctx.data.length + 1,
+      id: data.length + 1,
       title: eventTitle,
       value: value,
       color: `#${randomColor}`,
       start: startTime,
       end: endTime,
     };
-    ctx.setData((prevState) => {
+    setData((prevState) => {
       return [...prevState, newEvent];
     });
     console.log(newEvent);
   };
 
   const sendData = async () => {
-    await firestore("updateDoc", { data: ctx.data });
-    if (!isIntial) {
+    await firestore("updateDoc", { data: data });
+    if (!isInitial) {
       setIsInitial(true);
       return;
     } else {
-      ctx.setAdding(false);
+      setAdding(false);
     }
   };
 
   useEffect(() => {
     sendData();
-  }, [ctx.data]);
+  }, [data]);
 
   const onCancelAdding = () => {
-    ctx.setAdding(false);
+    setAdding(false);
   };
+
+  const hoverHandler = (e: React.MouseEvent) => {
+    setHover(e.currentTarget.id);
+  };
+  const hoverOutHandler = (e: React.MouseEvent) => {
+    setHover("");
+  };
+
   return (
     <div className="home-page-container">
       <Form onSubmit={formSubmitHandler} className="my-4">
@@ -132,6 +139,15 @@ const AddEvent = () => {
             value={eventTitle}
             type="text"
           ></Form.Control>
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Date:</Form.Label>
+          <Form.Control
+            onChange={(e) => {
+              console.log(e.target.value);
+            }}
+            type="date"
+          />
         </Form.Group>
 
         <div
@@ -151,39 +167,72 @@ const AddEvent = () => {
             <h5>{timeTransformer(endTime)}</h5>
           </Form.Group>
         </div>
-        <Slider
-          onChange={sliderChangeHandler}
-          railStyle={{
-            background: linearGradientString,
-            height: "7px",
-          }}
-          handleStyle={[
-            {
-              cursor: "pointer",
-              border: "none",
-              backgroundColor: "#ea39b8",
-              opacity: "1",
-              height: "16px",
-              width: "16px",
-            },
-            {
-              cursor: "ponter",
-              border: "none",
-              backgroundColor: "#ea39b8",
-              opacity: "1",
-              height: "16px",
-              width: "16px",
-            },
-          ]}
-          trackStyle={[{ height: "7px", backgroundColor: "transparent" }]}
-          range
-          allowCross={false}
-          defaultValue={[720, 800]}
-          min={0}
-          max={1440}
-          step={30}
-        />
-        {eventAlreadyPlaned && (
+        <div className="slider">
+          {data.length > 0 &&
+            dataReformer(data).map((elem, i) => {
+              return (
+                <div
+                  className="taken-hours"
+                  id={elem.id}
+                  onClick={(e) => {
+                    setHover(e.currentTarget.id);
+                  }}
+                  onMouseEnter={hoverHandler}
+                  onMouseOut={hoverOutHandler}
+                  key={elem.id}
+                  style={{
+                    width: `${elem.percent}%`,
+                    left: `${elem.startPercentage}%`,
+                  }}
+                >
+                  {hover == elem.id && (
+                    <BarHoverInfo
+                      title={data[i]?.title}
+                      start={data[i]?.start}
+                      end={data[i]?.end}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          <Slider
+            onChange={sliderChangeHandler}
+            railStyle={{
+              background: "#30115e",
+              height: "7px",
+            }}
+            handleStyle={[
+              {
+                zIndex: "3",
+                cursor: "pointer",
+                border: "none",
+                backgroundColor: "#ea39b8",
+                opacity: "1",
+                height: "16px",
+                width: "16px",
+              },
+              {
+                zIndex: "3",
+
+                cursor: "ponter",
+                border: "none",
+                backgroundColor: "#ea39b8",
+                opacity: "1",
+                height: "16px",
+                width: "16px",
+              },
+            ]}
+            trackStyle={[{ height: "7px", backgroundColor: "transparent" }]}
+            range
+            allowCross={false}
+            defaultValue={[720, 800]}
+            min={0}
+            max={1440}
+            step={30}
+          />
+        </div>
+
+        {IsEventAlreadyPlaned && (
           <p style={{ position: "absolute" }}>
             You have an event planed in this timespan
           </p>
@@ -191,7 +240,9 @@ const AddEvent = () => {
         <div style={{ textAlign: "center" }}>
           <Button
             className="mt-5"
-            disabled={endTime <= startTime || !eventTitle || eventAlreadyPlaned}
+            disabled={
+              endTime <= startTime || !eventTitle || IsEventAlreadyPlaned
+            }
             type="submit"
             variant="success"
           >

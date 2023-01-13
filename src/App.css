@@ -12,6 +12,7 @@
 
 .home-page-container {
   width: 90vw;
+  position: relative;
   max-width: 500px;
 }
 
@@ -24,6 +25,7 @@
   background-color: #30115e;
   width: 100%;
   height: 15px;
+  position: relative;
 }
 
 .bar-element:hover {
@@ -31,11 +33,26 @@
 }
 
 .bar-hover-container {
+  position: absolute !important ;
+  width: max-content;
+  top: 30px;
+  z-index: 2;
+}
+.slider {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  position: relative;
+}
+
+.taken-hours {
+  cursor: pointer;
+  top: 5px;
+  background-color: red;
+  overflow: visible;
+  height: 7px;
   position: absolute;
-  left: 0px;
-  top: 65px;
-  z-index: 999;
-  width: fit-content;
+  z-index: 2;
 }
 
 @media (max-width: 1200px) {

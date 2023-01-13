@@ -9,17 +9,17 @@ import { Context } from "../store/app-context";
 import LoadingBar from "../components/LoadingBar";
 
 const LoginPage: React.FC = () => {
-  const [signIn, setSignIn] = useState(false);
+  const [IsSignIn, setIsSignIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const ctx = useContext(Context);
-  const paragraphClickHandler = () => {
-    setSignIn((prevState) => !prevState);
+  const { loading } = useContext(Context);
+  const createAccountClickHandler = () => {
+    setIsSignIn((prevState) => !prevState);
   };
 
   const formSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (signIn) {
+    if (IsSignIn) {
       try {
         const userCredentials = await createUserWithEmailAndPassword(
           auth,
@@ -50,12 +50,12 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      {ctx.loading ? (
+      {loading ? (
         <LoadingBar />
       ) : (
         <div className="form-container">
           <Form onSubmit={formSubmitHandler}>
-            <Form.Group>
+            <Form.Group controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 value={email}
@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
                 placeholder="Enter your email"
               ></Form.Control>
             </Form.Group>
-            <Form.Group>
+            <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
                 value={password}
@@ -78,15 +78,14 @@ const LoginPage: React.FC = () => {
               ></Form.Control>
             </Form.Group>
             <Button
-              variant={!signIn ? "primary" : "secondary"}
+              variant={!IsSignIn ? "primary" : "secondary"}
               className="mt-3 mb-3"
               type="submit"
             >
-              {!signIn ? "Log in" : "Sign in"}
+              {!IsSignIn ? "Log in" : "Sign in"}
             </Button>
-            <p style={{ cursor: "pointer" }} onClick={paragraphClickHandler}>
-              If you dont have an account click here
-            </p>
+            <p>If you dont have an account click here:</p>
+            <Button onClick={createAccountClickHandler}>Create account</Button>
           </Form>
         </div>
       )}

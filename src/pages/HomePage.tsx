@@ -12,41 +12,42 @@ import LoadingBar from "../components/LoadingBar";
 import pieChartIcon from "../assets/pie-chart-fill.svg";
 
 const HomePage = () => {
-  const ctx = useContext(Context);
+  const { data, setIsLoading, onlogout, setData, setAdding, loading } =
+    useContext(Context);
   const firestore = useFireStore();
   const [pieChart, setPieChart] = useState(false);
 
   const getData = async () => {
     const response = await firestore("getDoc");
-    ctx.setData(response.data().data);
+    setData(response.data().data);
   };
   useEffect(() => {
-    ctx.setIsLoading(true);
+    setIsLoading(true);
     getData();
-    ctx.setIsLoading(false);
+    setIsLoading(false);
   }, []);
 
   const signOutHandler = async () => {
     try {
       await signOut(auth);
-      ctx.onlogout();
+      onlogout();
     } catch (e) {
       alert(e);
     }
   };
 
   const addNewTaskButtonHandler = () => {
-    ctx.setAdding(true);
+    setAdding(true);
   };
 
   return (
     <>
-      {ctx.loading ? (
+      {loading ? (
         <LoadingBar />
       ) : (
         <div className="home-page-container">
           {!pieChart ? <Bar /> : <Pie />}
-          {ctx.data.length === 0 ? (
+          {data.length === 0 ? (
             <p style={{ textAlign: "center" }}>
               You haven`t added any events yet
             </p>
@@ -73,7 +74,7 @@ const HomePage = () => {
               </Col>
               <Col xl={4} m={4} sm={4} xs={12}>
                 <Button
-                  disabled={ctx.data.length === 0}
+                  disabled={data.length === 0}
                   className="mt-3"
                   onClick={() => {
                     setPieChart((prev) => !prev);
