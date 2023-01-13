@@ -6,19 +6,17 @@ const BarHoverInfo: React.FC<{
   start: number;
   end: number;
 }> = (props) => {
-  const [isLeft, setIsLeft] = useState(true);
+  const [isLeft, setIsLeft] = useState(false);
   useEffect(() => {
     const elRect = document.getElementById("bar-hover-container");
-    if (
-      elRect != null &&
-      window.innerWidth - elRect.getBoundingClientRect().right < 0
-    ) {
-      setIsLeft(false);
+    if (elRect != null && elRect.getBoundingClientRect().left < 0) {
+      setIsLeft(true);
     }
   }, []);
+
   return (
     <Card
-      style={isLeft ? { left: "0" } : { right: "0" }}
+      style={isLeft ? { left: "0" } : {}}
       id="bar-hover-container"
       bg="info"
       color="info"
