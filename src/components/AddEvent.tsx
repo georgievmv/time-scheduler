@@ -21,7 +21,6 @@ const AddEvent = () => {
   ); */
   const firestore = useFireStore();
   const { data, setAdding, setData } = useContext(Context);
-
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
     data.forEach((elem) => {
@@ -139,15 +138,6 @@ const AddEvent = () => {
             value={eventTitle}
             type="text"
           ></Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Date:</Form.Label>
-          <Form.Control
-            onChange={(e) => {
-              console.log(e.target.value);
-            }}
-            type="date"
-          />
         </Form.Group>
 
         <div

@@ -1,11 +1,4 @@
-import {
-  getDoc,
-  updateDoc,
-  doc,
-  deleteDoc,
-  DocumentSnapshot,
-  DocumentData,
-} from "firebase/firestore";
+import { getDoc, updateDoc, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useContext } from "react";
 import { Context } from "../store/app-context";
@@ -15,7 +8,7 @@ const useFireStore = () => {
 
   const userRef = doc(db, "users", uid);
   const sendRequest = async (
-    task: "updateDoc" | "getDoc",
+    task: "updateDoc" | "getDoc" | "setDoc",
     payload?: {}
   ): Promise<any> => {
     if (task === "updateDoc") {
@@ -29,6 +22,13 @@ const useFireStore = () => {
     } else if (task === "getDoc") {
       try {
         const response = await getDoc(userRef);
+        return response;
+      } catch (e) {
+        alert(e);
+      }
+    } else if (task === "setDoc") {
+      try {
+        const response = await setDoc(doc(db, "users", uid), payload);
         return response;
       } catch (e) {
         alert(e);
