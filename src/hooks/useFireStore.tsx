@@ -28,7 +28,7 @@ const useFireStore = () => {
       }
     } else if (task === "setDoc") {
       try {
-        const response = await setDoc(doc(db, "users", uid), payload);
+        const response = await setDoc(userRef, payload);
         return response;
       } catch (e) {
         alert(e);

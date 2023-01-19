@@ -32,6 +32,12 @@
   cursor: pointer;
 }
 
+.bar-element {
+  border-right: 1px solid black;
+  overflow: visible !important;
+  height: 15px;
+  position: absolute;
+}
 .bar-hover-container {
   position: absolute !important ;
   width: max-content;
@@ -48,6 +54,7 @@
 }
 
 .taken-hours {
+  border-right: 2px solid black;
   cursor: pointer;
   top: 5px;
   background-color: red;

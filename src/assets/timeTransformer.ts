@@ -3,3 +3,7 @@ export const timeTransformer = (minutes: number) => {
   const formattedMinutes = minutes % 60 == 0 ? "00" : "30";
   return `${hour}:${formattedMinutes}`;
 };
+
+export const randomTimeGenerator = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max / 30 - min / 30) + min / 30) * 30;
+};

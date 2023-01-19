@@ -10,7 +10,7 @@ const EventList: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
-  const { data, setData } = useContext(Context);
+  const { date, data, setData } = useContext(Context);
 
   const onClickHandler = (e: React.MouseEvent) => {
     if (!deleting) {
@@ -35,32 +35,34 @@ const EventList: React.FC = () => {
 
   return (
     <>
-      {data.map((elem) => {
-        return (
-          <Card
-            id={elem.id.toString()}
-            onClick={onClickHandler}
-            key={elem.id}
-            style={{ cursor: "pointer" }}
-            className="m-3"
-            border="success"
-          >
-            <Card.Body>
-              <Card.Title>{elem.title}</Card.Title>
-              <Card.Text>
-                {`from ${timeTransformer(elem.start)} to ${timeTransformer(
-                  elem.end
-                )}`}
-              </Card.Text>
-            </Card.Body>
-            {deleting && selectedId === elem.id.toString() && (
-              <Button onClick={deleteEventHandler} variant="danger">
-                Delete
-              </Button>
-            )}
-          </Card>
-        );
-      })}
+      {data
+        .filter((elem) => elem.day === date)
+        .map((elem) => {
+          return (
+            <Card
+              id={elem.id.toString()}
+              onClick={onClickHandler}
+              key={elem.id}
+              style={{ cursor: "pointer" }}
+              className="m-3"
+              border="success"
+            >
+              <Card.Body>
+                <Card.Title>{elem.title}</Card.Title>
+                <Card.Text>
+                  {`from ${timeTransformer(elem.start)} to ${timeTransformer(
+                    elem.end
+                  )}`}
+                </Card.Text>
+              </Card.Body>
+              {deleting && selectedId === elem.id.toString() && (
+                <Button onClick={deleteEventHandler} variant="danger">
+                  Delete
+                </Button>
+              )}
+            </Card>
+          );
+        })}
     </>
   );
 };

@@ -12,6 +12,7 @@ const LoginPage: React.FC = () => {
   const [IsSignIn, setIsSignIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const { loading } = useContext(Context);
   const createAccountClickHandler = () => {
     setIsSignIn((prevState) => !prevState);
@@ -33,7 +34,7 @@ const LoginPage: React.FC = () => {
           });
         }
       } catch (error: any) {
-        console.log(error.message);
+        alert(error.message);
       }
     } else {
       try {
@@ -43,7 +44,11 @@ const LoginPage: React.FC = () => {
           password
         );
       } catch (error: any) {
-        console.log(error.message);
+        if (error.message === "Firebase: Error (auth/wrong-password).") {
+          setError("password");
+        } else {
+          setError("userNotFound");
+        }
       }
     }
   };
@@ -54,10 +59,11 @@ const LoginPage: React.FC = () => {
         <LoadingBar />
       ) : (
         <div className="form-container">
-          <Form onSubmit={formSubmitHandler}>
+          <Form className="mt-4" onSubmit={formSubmitHandler}>
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
+                isInvalid={error === "userNotFound"}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -65,17 +71,28 @@ const LoginPage: React.FC = () => {
                 type="email"
                 placeholder="Enter your email"
               ></Form.Control>
+              <Form.Control.Feedback
+                type={error === "userNotFound" ? "invalid" : "valid"}
+              >
+                User not found
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
+                isInvalid={error === "password"}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
                 type="password"
                 placeholder="Enter your password"
-              ></Form.Control>
+              />
+              <Form.Control.Feedback
+                type={error === "password" ? "invalid" : "valid"}
+              >
+                Password is invalid
+              </Form.Control.Feedback>
             </Form.Group>
             <Button
               variant={!IsSignIn ? "primary" : "secondary"}

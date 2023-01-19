@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, FormControlProps } from "react-bootstrap";
 import { useState, useContext, useEffect } from "react";
 import { Context } from "../store/app-context";
 import useFireStore from "../hooks/useFireStore";
@@ -13,80 +13,50 @@ const AddEvent = () => {
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
-  const [endTime, setEndTime] = useState(800);
+  const [endTime, setEndTime] = useState(810);
   const [eventTitle, setEventTitle] = useState("");
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
-  /*  const [linearGradientString, setLinearGradientString] = useState(
-    "linear-gradient(to right, #30115e 0%, #30115e 100%)"
-  ); */
   const firestore = useFireStore();
-  const { data, setAdding, setData } = useContext(Context);
+  const { setDate, date, data, setAdding, setData } = useContext(Context);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
-    data.forEach((elem) => {
-      if (
-        (value[0] < elem.start && value[1] > elem.start) ||
-        (value[0] >= elem.start && value[0] < elem.end) ||
-        (value[1] < elem.end && value[1] > elem.start)
-      ) {
-        setIsEventAlreadyPlaned(true);
-      }
-    });
+    data
+      .filter((elem) => elem.day === date)
+      .forEach((elem) => {
+        if (
+          (value[0] < elem.start && value[1] > elem.start) ||
+          (value[0] >= elem.start && value[0] < elem.end) ||
+          (value[1] < elem.end && value[1] > elem.start)
+        ) {
+          setIsEventAlreadyPlaned(true);
+        }
+      });
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
   useEffect(() => {
-    data.forEach((elem) => {
-      if (
-        (startTime < elem.start && endTime > elem.start) ||
-        (startTime > elem.start && startTime < elem.end) ||
-        (endTime < elem.end && endTime > elem.start)
-      ) {
-        setIsEventAlreadyPlaned(true);
-      }
-    });
-  }, []);
-
-  //Logic for showing red color for already taken hours
-  /* const createLinearGradient = () => {
-    const percentagesArr = data
-      .map((elem) => {
-        return {
-          startPercentage: Math.round(elem.start / 14.4),
-          endPercentage: Math.round(elem.end / 14.4),
-        };
-      })
-      .sort((a, b) => a.startPercentage - b.startPercentage);
-    let newString = "linear-gradient(to right";
-    if (percentagesArr) {
-      percentagesArr.forEach((elem, i) => {
-        if (percentagesArr.length === 1) {
-          newString += `, #30115e 0%, #30115e ${elem.startPercentage}%, red ${elem.startPercentage}%, red ${elem.endPercentage}%, #30115e ${elem.endPercentage}%, #30115e 100%`;
-        }
-        if (i + 1 < percentagesArr.length) {
-          if (elem.startPercentage !== 0) {
-            newString += `, #30115e 0%, #30115e ${elem.startPercentage}%, red ${elem.startPercentage}%, red ${elem.endPercentage}%`;
-          }
-          newString += `, red ${elem.startPercentage}%, red ${
-            elem.endPercentage
-          }%, #30115e ${elem.endPercentage}%, #30115e ${
-            percentagesArr[i + 1].startPercentage
-          }%`;
-        } else if (elem.endPercentage !== 100) {
-          newString += `, red ${elem.startPercentage}%, red ${elem.endPercentage}%, #30115e ${elem.endPercentage}%, #30115e 100%`;
+    console.log("running");
+    setIsEventAlreadyPlaned(false);
+    data
+      .filter((elem) => elem.day === date)
+      .forEach((elem) => {
+        if (
+          (startTime < elem.start && endTime > elem.start) ||
+          (startTime >= elem.start && startTime < elem.end) ||
+          (endTime < elem.end && endTime > elem.start)
+        ) {
+          setIsEventAlreadyPlaned(true);
         }
       });
-      setLinearGradientString(`${newString})`);
-    }
-  }; */
+  }, [date]);
 
-  ////////////////////////////////////////////////////
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     const value = (endTime - startTime) / 60;
     const newEvent = {
+      day: date,
       id: data.length + 1,
       title: eventTitle,
       value: value,
@@ -125,6 +95,10 @@ const AddEvent = () => {
     setHover("");
   };
 
+  const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate(e.currentTarget.value);
+  };
+
   return (
     <div className="home-page-container">
       <Form onSubmit={formSubmitHandler} className="my-4">
@@ -140,6 +114,14 @@ const AddEvent = () => {
           ></Form.Control>
         </Form.Group>
 
+        <Form.Group>
+          <Form.Label>Date:</Form.Label>
+          <Form.Control
+            type="date"
+            value={date}
+            onChange={dateChangeHandler}
+          ></Form.Control>
+        </Form.Group>
         <div
           style={{
             marginTop: "2rem",
@@ -159,32 +141,42 @@ const AddEvent = () => {
         </div>
         <div className="slider">
           {data.length > 0 &&
-            dataReformer(data).map((elem, i) => {
-              return (
-                <div
-                  className="taken-hours"
-                  id={elem.id}
-                  onClick={(e) => {
-                    setHover(e.currentTarget.id);
-                  }}
-                  onMouseEnter={hoverHandler}
-                  onMouseOut={hoverOutHandler}
-                  key={elem.id}
-                  style={{
-                    width: `${elem.percent}%`,
-                    left: `${elem.startPercentage}%`,
-                  }}
-                >
-                  {hover == elem.id && (
-                    <BarHoverInfo
-                      title={data[i]?.title}
-                      start={data[i]?.start}
-                      end={data[i]?.end}
-                    />
-                  )}
-                </div>
-              );
-            })}
+            dataReformer(data)
+              .filter((elem) => elem.day === date)
+              .map((elem, i) => {
+                return (
+                  <div
+                    className="taken-hours"
+                    id={elem.id}
+                    onClick={(e) => {
+                      setHover(e.currentTarget.id);
+                    }}
+                    onMouseEnter={hoverHandler}
+                    onMouseOut={hoverOutHandler}
+                    key={elem.id}
+                    style={
+                      i === data.length - 1
+                        ? {
+                            border: "none",
+                            width: `${elem.percent}%`,
+                            left: `${elem.startPercentage}%`,
+                          }
+                        : {
+                            width: `${elem.percent}%`,
+                            left: `${elem.startPercentage}%`,
+                          }
+                    }
+                  >
+                    {hover == elem.id && (
+                      <BarHoverInfo
+                        title={data[i]?.title}
+                        start={data[i]?.start}
+                        end={data[i]?.end}
+                      />
+                    )}
+                  </div>
+                );
+              })}
           <Slider
             onChange={sliderChangeHandler}
             railStyle={{

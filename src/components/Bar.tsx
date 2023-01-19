@@ -1,11 +1,11 @@
 import React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
 import BarHoverInfo from "./BarHoverInfo";
 import { dataReformer } from "../assets/reformDataForBar";
 
 const Bar = () => {
-  const { data } = useContext(Context);
+  const { data, date } = useContext(Context);
   const [hover, setHover] = useState("");
 
   const hoverHandler = (e: React.MouseEvent) => {
@@ -18,35 +18,34 @@ const Bar = () => {
   return (
     <div className="bar-container">
       {data.length > 0 &&
-        dataReformer(data).map((elem, i) => {
-          return (
-            <div
-              id={elem.id}
-              onClick={(e) => {
-                setHover(e.currentTarget.id);
-              }}
-              onMouseEnter={hoverHandler}
-              onMouseOut={hoverOutHandler}
-              key={elem.id}
-              className="progress-bar bg-success bar-element"
-              style={{
-                overflow: "visible",
-                height: "15px",
-                position: "absolute",
-                width: `${elem.percent}%`,
-                left: `${elem.startPercentage}%`,
-              }}
-            >
-              {hover == elem.id && (
-                <BarHoverInfo
-                  title={data[i]?.title}
-                  start={data[i]?.start}
-                  end={data[i]?.end}
-                />
-              )}
-            </div>
-          );
-        })}
+        dataReformer(data)
+          .filter((elem) => elem.day === date)
+          .map((elem, i, arr) => {
+            return (
+              <div
+                id={elem.id}
+                onClick={(e) => {
+                  setHover(e.currentTarget.id);
+                }}
+                onMouseEnter={hoverHandler}
+                onMouseOut={hoverOutHandler}
+                key={elem.id}
+                className="progress-bar bg-success bar-element"
+                style={{
+                  width: `${elem.percent}%`,
+                  left: `${elem.startPercentage}%`,
+                }}
+              >
+                {hover == elem.id && (
+                  <BarHoverInfo
+                    title={arr[i].title}
+                    start={arr[i].start}
+                    end={arr[i].end}
+                  />
+                )}
+              </div>
+            );
+          })}
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React from "react";
 import { useState } from "react";
 import { Event } from "../components/Pie";
 type ContextObj = {
+  setDate: (arg: string) => void;
+  date: string;
   loading: boolean;
   setIsLoading: (arg: boolean) => void;
   adding: boolean;
@@ -15,6 +17,8 @@ type ContextObj = {
 };
 
 export const Context = React.createContext<ContextObj>({
+  setDate: (arg: string) => {},
+  date: "",
   loading: false,
   setIsLoading: (arg: boolean) => {},
   adding: false,
@@ -32,8 +36,13 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   const [data, setData] = useState<Event[] | []>([]);
   const [uid, setUid] = useState<string>("");
   const [adding, setAdding] = useState(false);
-
   const [loading, setIsLoading] = useState(false);
+  const today = `${new Date().getFullYear()}-${
+    new Date().getMonth().toString().length === 1
+      ? "" + new Date().getMonth() + 1
+      : new Date().getMonth() + 1
+  }-${new Date().getDate()}`;
+  const [date, setDate] = useState(today);
 
   const onlogin = (arg: string) => {
     setIsLoggedIn(true);
@@ -45,6 +54,8 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   };
 
   const contextValue = {
+    setDate,
+    date,
     loading,
     setIsLoading,
     adding,

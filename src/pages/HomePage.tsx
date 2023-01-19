@@ -3,7 +3,7 @@ import Pie from "../components/Pie";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { Context } from "../store/app-context";
-import { Button, Row, Col } from "react-bootstrap";
+import { Button, Row, Col, Form } from "react-bootstrap";
 import useFireStore from "../hooks/useFireStore";
 import { useEffect, useState, useContext } from "react";
 import EventList from "../components/EventList";
@@ -12,10 +12,18 @@ import LoadingBar from "../components/LoadingBar";
 import pieChartIcon from "../assets/pie-chart-fill.svg";
 
 const HomePage = () => {
-  const { data, setIsLoading, onlogout, setData, setAdding, loading } =
-    useContext(Context);
+  const {
+    setDate,
+    date,
+    data,
+    setIsLoading,
+    onlogout,
+    setData,
+    setAdding,
+    loading,
+  } = useContext(Context);
   const firestore = useFireStore();
-  const [pieChart, setPieChart] = useState(false);
+  const [isPieChart, setIsPieChart] = useState(false);
 
   const getData = async () => {
     const response = await firestore("getDoc");
@@ -40,16 +48,29 @@ const HomePage = () => {
     setAdding(true);
   };
 
+  const filteredData = data.filter((elem) => elem.day === date);
+
   return (
     <>
       {loading ? (
         <LoadingBar />
       ) : (
         <div className="home-page-container">
-          {!pieChart ? <Bar /> : <Pie />}
-          {data.length === 0 ? (
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="date"
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value);
+              }}
+            />
+          </Form.Group>
+
+          {isPieChart && filteredData.length !== 0 && <Pie />}
+          <Bar />
+          {filteredData.length === 0 ? (
             <p style={{ textAlign: "center" }}>
-              You haven`t added any events yet
+              You haven`t added any events for this day yet
             </p>
           ) : (
             <div>
@@ -77,7 +98,7 @@ const HomePage = () => {
                   disabled={data.length === 0}
                   className="mt-3"
                   onClick={() => {
-                    setPieChart((prev) => !prev);
+                    setIsPieChart((prev) => !prev);
                   }}
                 >
                   <img
@@ -85,7 +106,7 @@ const HomePage = () => {
                     src={pieChartIcon}
                     alt=""
                   />
-                  See pie chart
+                  Pie chart
                 </Button>
               </Col>
             </Row>
