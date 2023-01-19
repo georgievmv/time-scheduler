@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button, FormControlProps } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { useState, useContext, useEffect } from "react";
 import { Context } from "../store/app-context";
 import useFireStore from "../hooks/useFireStore";
@@ -8,6 +8,7 @@ import "rc-slider/assets/index.css";
 import { timeTransformer } from "../assets/timeTransformer";
 import { dataReformer } from "../assets/reformDataForBar";
 import BarHoverInfo from "./BarHoverInfo";
+import { randomTimeGenerator } from "../assets/timeTransformer";
 
 const AddEvent = () => {
   const [hover, setHover] = useState("");
@@ -18,37 +19,33 @@ const AddEvent = () => {
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
   const { setDate, date, data, setAdding, setData } = useContext(Context);
+
+  const filteredData = data.filter((elem) => elem.day === date);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
-    data
-      .filter((elem) => elem.day === date)
-      .forEach((elem) => {
-        if (
-          (value[0] < elem.start && value[1] > elem.start) ||
-          (value[0] >= elem.start && value[0] < elem.end) ||
-          (value[1] < elem.end && value[1] > elem.start)
-        ) {
-          setIsEventAlreadyPlaned(true);
-        }
-      });
+    filteredData.forEach((elem) => {
+      if (
+        (value[0] < elem.start && value[1] > elem.start) ||
+        (value[0] >= elem.start && value[0] < elem.end) ||
+        (value[1] < elem.end && value[1] > elem.start)
+      ) {
+        setIsEventAlreadyPlaned(true);
+      }
+    });
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
   useEffect(() => {
-    console.log("running");
-    setIsEventAlreadyPlaned(false);
-    data
-      .filter((elem) => elem.day === date)
-      .forEach((elem) => {
-        if (
-          (startTime < elem.start && endTime > elem.start) ||
-          (startTime >= elem.start && startTime < elem.end) ||
-          (endTime < elem.end && endTime > elem.start)
-        ) {
-          setIsEventAlreadyPlaned(true);
-        }
-      });
+    if (filteredData.length > 0) {
+      const randomTime = randomTimeGenerator(filteredData);
+      setStartTime(randomTime[0]);
+      setEndTime(randomTime[1]);
+    }
   }, [date]);
+
+  //////////////////
+
+  ////////////////
 
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,7 +204,8 @@ const AddEvent = () => {
             trackStyle={[{ height: "7px", backgroundColor: "transparent" }]}
             range
             allowCross={false}
-            defaultValue={[720, 800]}
+            defaultValue={[startTime, endTime]}
+            value={[startTime, endTime]}
             min={0}
             max={1440}
             step={30}
