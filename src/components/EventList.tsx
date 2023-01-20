@@ -37,6 +37,7 @@ const EventList: React.FC = () => {
     <>
       {data
         .filter((elem) => elem.day === date)
+        .sort((a, b) => a.start - b.start)
         .map((elem) => {
           return (
             <Card
