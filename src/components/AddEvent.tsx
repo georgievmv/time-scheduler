@@ -49,12 +49,15 @@ const AddEvent = () => {
 
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
+    const randomId = Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
 
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     const value = (endTime - startTime) / 60;
     const newEvent = {
       day: date,
-      id: data.length + 1,
+      id: randomId,
       title: eventTitle,
       value: value,
       color: `#${randomColor}`,

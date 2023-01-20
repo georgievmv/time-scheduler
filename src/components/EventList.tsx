@@ -23,7 +23,7 @@ const EventList: React.FC = () => {
   };
 
   const deleteEventHandler = () => {
-    const newData = data.filter((elem) => elem.id !== parseInt(selectedId));
+    const newData = data.filter((elem) => elem.id !== selectedId);
 
     setData(newData);
     sendData(newData);
@@ -41,7 +41,7 @@ const EventList: React.FC = () => {
         .map((elem) => {
           return (
             <Card
-              id={elem.id.toString()}
+              id={elem.id}
               onClick={onClickHandler}
               key={elem.id}
               style={{ cursor: "pointer" }}

@@ -4,7 +4,7 @@ import { Context } from "../store/app-context";
 
 export type Event = {
   day: string;
-  id: number;
+  id: string;
   title: string;
   value: number;
   color: string;
