@@ -30,9 +30,11 @@ const HomePage = () => {
     setData(response.data().data);
   };
   useEffect(() => {
-    setIsLoading(true);
-    getData();
-    setIsLoading(false);
+    if (data.length === 0) {
+      setIsLoading(true);
+      getData();
+      setIsLoading(false);
+    }
   }, []);
 
   const signOutHandler = async () => {
