@@ -20,6 +20,7 @@ const Bar = () => {
       {data.length > 0 &&
         dataReformer(data)
           .filter((elem) => elem.day === date)
+          .sort((a, b) => a.start - b.start)
           .map((elem, i, arr) => {
             return (
               <div
@@ -32,6 +33,8 @@ const Bar = () => {
                 key={elem.id}
                 className="progress-bar bg-success bar-element"
                 style={{
+                  borderRight:
+                    elem.end === arr[i + 1]?.start ? "1px solid black" : "none",
                   width: `${elem.percent}%`,
                   left: `${elem.startPercentage}%`,
                 }}
