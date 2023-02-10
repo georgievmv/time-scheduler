@@ -39,11 +39,14 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   const [loading, setIsLoading] = useState(false);
   const today = `${new Date().getFullYear()}-${
     new Date().getMonth().toString().length === 1
-      ? "" + new Date().getMonth() + 1
+      ? "0" + (new Date().getMonth() + 1)
       : new Date().getMonth() + 1
-  }-${new Date().getDate()}`;
+  }-${
+    new Date().getDate().toString().length === 1
+      ? "0" + new Date().getDate()
+      : new Date().getDate()
+  }`;
   const [date, setDate] = useState(today);
-
   const onlogin = (arg: string) => {
     setIsLoggedIn(true);
     setUid(arg);

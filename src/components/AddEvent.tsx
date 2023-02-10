@@ -139,7 +139,7 @@ const AddEvent = () => {
           {data.length > 0 &&
             dataReformer(data)
               .filter((elem) => elem.day === date)
-              .map((elem, i) => {
+              .map((elem, i, arr) => {
                 return (
                   <div
                     className="taken-hours"
@@ -165,9 +165,9 @@ const AddEvent = () => {
                   >
                     {hover == elem.id && (
                       <BarHoverInfo
-                        title={data[i]?.title}
-                        start={data[i]?.start}
-                        end={data[i]?.end}
+                        title={arr[i]?.title}
+                        start={arr[i]?.start}
+                        end={arr[i]?.end}
                       />
                     )}
                   </div>
