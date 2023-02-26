@@ -22,35 +22,32 @@ const Pie = () => {
 
   const valuesArr = data
     .filter((elem) => elem.day === date)
-    .map((elem) => {
-      return elem.value;
-    });
+    .map((elem) => elem.value);
 
   const sumOfValues = valuesArr.reduce((a, b) => a + b);
-  const x = 100 / sumOfValues;
+  const percentageConversionRatio = 100 / sumOfValues;
   const reformedData = data
     .filter((elem) => elem.day === date)
     .map((elem) => {
-      return { ...elem, value: elem.value * x };
+      return { ...elem, value: elem.value * percentageConversionRatio };
     });
   return (
-    <div className="pie">
-      <PieChart
-        onClick={onClickHandler}
-        label={({ dataEntry }) =>
-          !isShowingPercentage
-            ? `${dataEntry.title}`
-            : `${Math.round(dataEntry.value)}%`
-        }
-        animate={true}
-        animationDuration={700}
-        labelStyle={{ fontSize: "8px" }}
-        labelPosition={65}
-        lineWidth={70}
-        totalValue={100}
-        data={reformedData}
-      />
-    </div>
+    <PieChart
+      className="pie"
+      onClick={onClickHandler}
+      label={({ dataEntry }) =>
+        !isShowingPercentage
+          ? `${dataEntry.title}`
+          : `${Math.round(dataEntry.value)}%`
+      }
+      animate
+      animationDuration={700}
+      labelStyle={{ fontSize: "8px" }}
+      labelPosition={65}
+      lineWidth={70}
+      totalValue={100}
+      data={reformedData}
+    />
   );
 };
 

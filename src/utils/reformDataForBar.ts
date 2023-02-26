@@ -1,7 +1,6 @@
 import { Event } from "../components/Pie";
-
 export const dataReformer = (data: Event[]) => {
-  const startAndEndPercentageArr = data.map((elem) => {
+  return data.map((elem) => {
     return {
       title: elem.title,
       start: elem.start,
@@ -12,5 +11,4 @@ export const dataReformer = (data: Event[]) => {
       percent: elem.end / 14.4 - elem.start / 14.4,
     };
   });
-  return startAndEndPercentageArr;
 };

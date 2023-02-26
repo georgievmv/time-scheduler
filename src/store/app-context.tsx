@@ -9,8 +9,8 @@ type ContextObj = {
   adding: boolean;
   setAdding: (arg: boolean) => void;
   uid: string;
-  onlogout: () => void;
-  onlogin: (arg: string) => void;
+  onLogout: () => void;
+  onLogin: (arg: string) => void;
   isLoggedIn: boolean;
   setData: (arg: Event[] | ((arg: Event[]) => Event[])) => void;
   data: Event[] | [];
@@ -24,8 +24,8 @@ export const Context = React.createContext<ContextObj>({
   adding: false,
   setAdding: () => {},
   uid: "",
-  onlogout: () => {},
-  onlogin: (arg: string) => {},
+  onLogout: () => {},
+  onLogin: (arg: string) => {},
   isLoggedIn: false,
   setData: (arg: Event[] | ((arg: Event[]) => Event[])) => {},
   data: [],
@@ -46,12 +46,13 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
       ? "0" + new Date().getDate()
       : new Date().getDate()
   }`;
+  //TODO:move up with other states
   const [date, setDate] = useState(today);
-  const onlogin = (arg: string) => {
+  const onLogin = (arg: string) => {
     setIsLoggedIn(true);
     setUid(arg);
   };
-  const onlogout = () => {
+  const onLogout = () => {
     setIsLoggedIn(false);
     setUid("");
   };
@@ -64,8 +65,8 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
     adding,
     setAdding,
     uid,
-    onlogout,
-    onlogin,
+    onLogout,
+    onLogin,
     isLoggedIn,
     setData,
     data,

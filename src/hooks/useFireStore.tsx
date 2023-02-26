@@ -13,9 +13,7 @@ const useFireStore = () => {
   ): Promise<any> => {
     if (task === "updateDoc") {
       try {
-        const response = await updateDoc<any>(userRef, payload);
-
-        return response;
+        return await updateDoc<any>(userRef, payload);
       } catch (e) {
         alert(e);
       }

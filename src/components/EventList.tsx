@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
-import { timeTransformer } from "../assets/timeTransformer";
+import { timeTransformer } from "../utils/timeTransformer";
 import useFireStore from "../hooks/useFireStore";
 import { Event } from "./Pie";
 

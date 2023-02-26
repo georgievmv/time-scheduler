@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Card } from "react-bootstrap";
-import { timeTransformer } from "../assets/timeTransformer";
+import { timeTransformer } from "../utils/timeTransformer";
+
 const BarHoverInfo: React.FC<{
   title: string;
   start: number;
   end: number;
 }> = (props) => {
   const [isLeft, setIsLeft] = useState(false);
+  const hoverInfoRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    const elRect = document.getElementById("bar-hover-container");
-    if (elRect != null && elRect.getBoundingClientRect().left < 0) {
+    if (
+      hoverInfoRef.current != null &&
+      hoverInfoRef.current.getBoundingClientRect().left < 0
+    ) {
       setIsLeft(true);
     }
   }, []);
 
   return (
     <Card
+      ref={hoverInfoRef}
       style={isLeft ? { left: "0" } : {}}
       id="bar-hover-container"
       bg="info"

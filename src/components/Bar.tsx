@@ -2,7 +2,7 @@ import React from "react";
 import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
 import BarHoverInfo from "./BarHoverInfo";
-import { dataReformer } from "../assets/reformDataForBar";
+import { dataReformer } from "../utils/reformDataForBar";
 
 const Bar = () => {
   const { data, date } = useContext(Context);
@@ -39,7 +39,7 @@ const Bar = () => {
                   left: `${elem.startPercentage}%`,
                 }}
               >
-                {hover == elem.id && (
+                {hover === elem.id && (
                   <BarHoverInfo
                     title={arr[i].title}
                     start={arr[i].start}
