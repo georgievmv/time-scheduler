@@ -9,10 +9,10 @@ import { Context } from "../store/app-context";
 import LoadingBar from "../components/LoadingBar";
 
 const LoginPage: React.FC = () => {
-  const [IsSignIn, setIsSignIn] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { loading } = useContext(Context);
   const createAccountClickHandler = () => {
     setIsSignIn((prevState) => !prevState);
@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
 
   const formSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (IsSignIn) {
+    if (isSignIn) {
       try {
         const userCredentials = await createUserWithEmailAndPassword(
           auth,
@@ -34,20 +34,16 @@ const LoginPage: React.FC = () => {
           });
         }
       } catch (error: any) {
-        alert(error.message);
+        alert(error.code);
       }
     } else {
       try {
-        const userCredentials = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        await signInWithEmailAndPassword(auth, email, password);
       } catch (error: any) {
-        if (error.message === "Firebase: Error (auth/wrong-password).") {
-          setError("password");
+        if (error.code === "auth/wrong-password") {
+          setErrorMessage("password");
         } else {
-          setError("userNotFound");
+          setErrorMessage("userNotFound");
         }
       }
     }
@@ -63,7 +59,7 @@ const LoginPage: React.FC = () => {
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
-                isInvalid={error === "userNotFound"}
+                isInvalid={errorMessage === "userNotFound"}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -72,7 +68,7 @@ const LoginPage: React.FC = () => {
                 placeholder="Enter your email"
               ></Form.Control>
               <Form.Control.Feedback
-                type={error === "userNotFound" ? "invalid" : "valid"}
+                type={errorMessage === "userNotFound" ? "invalid" : "valid"}
               >
                 User not found
               </Form.Control.Feedback>
@@ -80,7 +76,7 @@ const LoginPage: React.FC = () => {
             <Form.Group controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
               <Form.Control
-                isInvalid={error === "password"}
+                isInvalid={errorMessage === "password"}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -89,17 +85,17 @@ const LoginPage: React.FC = () => {
                 placeholder="Enter your password"
               />
               <Form.Control.Feedback
-                type={error === "password" ? "invalid" : "valid"}
+                type={errorMessage === "password" ? "invalid" : "valid"}
               >
                 Password is invalid
               </Form.Control.Feedback>
             </Form.Group>
             <Button
-              variant={!IsSignIn ? "primary" : "secondary"}
+              variant={!isSignIn ? "primary" : "secondary"}
               className="mt-3 mb-3"
               type="submit"
             >
-              {!IsSignIn ? "Log in" : "Sign in"}
+              {!isSignIn ? "Log in" : "Sign in"}
             </Button>
             <p>If you dont have an account click here:</p>
             <Button onClick={createAccountClickHandler}>Create account</Button>

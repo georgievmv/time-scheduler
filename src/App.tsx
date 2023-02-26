@@ -16,7 +16,7 @@ function App() {
   }, []);
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      ctx.onlogin(user.uid);
+      ctx.onLogin(user.uid);
     }
     ctx.setIsLoading(false);
   });

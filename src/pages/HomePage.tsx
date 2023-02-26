@@ -17,31 +17,33 @@ const HomePage = () => {
     date,
     data,
     setIsLoading,
-    onlogout,
+    onLogout,
     setData,
     setAdding,
     loading,
   } = useContext(Context);
   const firestore = useFireStore();
   const [isPieChart, setIsPieChart] = useState(false);
+  const filteredData = data.filter((elem) => elem.day === date);
 
-  const getData = async () => {
-    const response = await firestore("getDoc");
-    setData(response.data().data);
-  };
   useEffect(() => {
-    if (data.length === 0) {
+    const getData = async () => {
       setIsLoading(true);
-      getData();
+      const response = await firestore("getDoc");
+      setData(response.data().data);
       setIsLoading(false);
+    };
+    if (data.length === 0) {
+      getData();
     }
   }, []);
 
   const signOutHandler = async () => {
     try {
       await signOut(auth);
-      onlogout();
+      onLogout();
     } catch (e) {
+      //TODO: install and use react-toastify for toast messages/errors/warnings
       alert(e);
     }
   };
@@ -49,8 +51,6 @@ const HomePage = () => {
   const addNewTaskButtonHandler = () => {
     setAdding(true);
   };
-
-  const filteredData = data.filter((elem) => elem.day === date);
 
   return (
     <>
@@ -68,16 +68,14 @@ const HomePage = () => {
             />
           </Form.Group>
 
-          {isPieChart && filteredData.length !== 0 && <Pie />}
+          {isPieChart && !!filteredData.length && <Pie />}
           <Bar />
-          {filteredData.length === 0 ? (
+          {!filteredData.length ? (
             <p style={{ textAlign: "center" }}>
               You haven`t added any events for this day yet
             </p>
           ) : (
-            <div>
-              <EventList />
-            </div>
+            <EventList />
           )}
           <div style={{ textAlign: "center" }}>
             <Row>
@@ -97,7 +95,7 @@ const HomePage = () => {
               </Col>
               <Col xl={4} m={4} sm={4} xs={12}>
                 <Button
-                  disabled={data.length === 0}
+                  disabled={!data.length}
                   className="mt-3"
                   onClick={() => {
                     setIsPieChart((prev) => !prev);
