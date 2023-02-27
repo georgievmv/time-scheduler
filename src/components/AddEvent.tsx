@@ -9,6 +9,8 @@ import { timeTransformer } from "../utils/timeTransformer";
 import { dataReformer } from "../utils/reformDataForBar";
 import BarHoverInfo from "./BarHoverInfo";
 import { randomTimeGenerator } from "../utils/timeTransformer";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddEvent = () => {
   const [hover, setHover] = useState("");
@@ -19,7 +21,6 @@ const AddEvent = () => {
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
   const { setDate, date, data, setAdding, setData } = useContext(Context);
-
   const filteredData = data.filter((elem) => elem.day === date);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
@@ -42,29 +43,6 @@ const AddEvent = () => {
       setEndTime(randomTime[1]);
     }
   }, [date]);
-
-  const formSubmitHandler = (e: React.FormEvent) => {
-    e.preventDefault();
-    const randomId = Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    const value = (endTime - startTime) / 60;
-    const newEvent = {
-      day: date,
-      id: randomId,
-      title: eventTitle,
-      value: value,
-      color: `#${randomColor}`,
-      start: startTime,
-      end: endTime,
-    };
-    setData((prevState) => {
-      return [...prevState, newEvent];
-    });
-    console.log(newEvent);
-  };
 
   useEffect(() => {
     const sendData = async () => {
@@ -91,7 +69,33 @@ const AddEvent = () => {
   };
 
   const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDate(e.currentTarget.value);
+    if (e.target.value.length <= 10) {
+      setDate(e.currentTarget.value);
+    }
+  };
+  const formSubmitHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+    const randomId = Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const value = (endTime - startTime) / 60;
+    const newEvent = {
+      day: date,
+      id: randomId,
+      title: eventTitle,
+      value: value,
+      color: `#${randomColor}`,
+      start: startTime,
+      end: endTime,
+    };
+    setData((prevState) => {
+      return [...prevState, newEvent];
+    });
+    toast.success("You've successfully added a new event", {
+      position: toast.POSITION.TOP_CENTER,
+    });
   };
 
   return (
@@ -168,8 +172,7 @@ const AddEvent = () => {
                 </div>
               );
             })}
-        {/*           //TODO: when styles are more then a few, declare a class instead
-         */}
+
         <Slider
           onChange={sliderChangeHandler}
           railStyle={{
