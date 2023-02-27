@@ -10,6 +10,7 @@ import EventList from "../components/EventList";
 import Bar from "../components/Bar";
 import LoadingBar from "../components/LoadingBar";
 import pieChartIcon from "../assets/pie-chart-fill.svg";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const {
@@ -42,9 +43,15 @@ const HomePage = () => {
     try {
       await signOut(auth);
       onLogout();
-    } catch (e) {
-      //TODO: install and use react-toastify for toast messages/errors/warnings
-      alert(e);
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.value.length <= 10) {
+      setDate(e.currentTarget.value);
     }
   };
 
@@ -62,9 +69,7 @@ const HomePage = () => {
             <Form.Control
               type="date"
               value={date}
-              onChange={(e) => {
-                setDate(e.target.value);
-              }}
+              onChange={dateChangeHandler}
             />
           </Form.Group>
 

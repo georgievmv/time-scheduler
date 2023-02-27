@@ -7,6 +7,7 @@ import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { Context } from "../store/app-context";
 import LoadingBar from "../components/LoadingBar";
+import { toast } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   const [isSignIn, setIsSignIn] = useState(false);
@@ -34,7 +35,7 @@ const LoginPage: React.FC = () => {
           });
         }
       } catch (error: any) {
-        alert(error.code);
+        toast.error(error.code);
       }
     } else {
       try {
