@@ -24,14 +24,12 @@ function App() {
   });
 
   return (
-    <>
-      <div className="app">
-        <ToastContainer hideProgressBar />
-        {!ctx.isLoggedIn ? <LoginPage /> : ""}
-        {ctx.isLoggedIn && ctx.adding ? <AddEvent /> : ""}
-        {ctx.isLoggedIn && !ctx.adding ? <HomePage /> : ""}
-      </div>
-    </>
+    <div className="app">
+      <ToastContainer hideProgressBar />
+      {!ctx.isLoggedIn ? <LoginPage /> : ""}
+      {ctx.isLoggedIn && ctx.adding ? <AddEvent /> : ""}
+      {ctx.isLoggedIn && !ctx.adding ? <HomePage /> : ""}
+    </div>
   );
 }
 

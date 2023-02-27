@@ -9,19 +9,19 @@ const WarningModal: React.FC<{
   onDecline: () => void;
   onConfirm: () => void;
 }> = (props) => {
+  const { title, message, show, onDecline, onConfirm } = props;
+
   return (
-    <Modal onHide={props.onDecline} className="p-2" show={props.show}>
+    <Modal onHide={onDecline} className="p-2" show={show}>
       <Modal.Title className="p-4">
-        {!props.title ? "Modal title" : props.title}
+        {!title ? "Modal title" : title}
       </Modal.Title>
-      <Modal.Body>
-        {!props.message ? "Modal message" : props.message}
-      </Modal.Body>
+      <Modal.Body>{!message ? "Modal message" : message}</Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={props.onConfirm}>
+        <Button variant="primary" onClick={onConfirm}>
           Yes
         </Button>
-        <Button variant="danger" onClick={props.onDecline}>
+        <Button variant="danger" onClick={onDecline}>
           No
         </Button>
       </Modal.Footer>

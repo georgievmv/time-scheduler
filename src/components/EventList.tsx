@@ -14,7 +14,7 @@ const EventList: React.FC = () => {
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
   const { date, data, setData } = useContext(Context);
-
+  const toggleModalShow = () => setIsShowModal(!isShowModal);
   const onClickHandler = (e: React.MouseEvent) => {
     if (e.currentTarget.id === selectedId && deleting) {
       setDeleting(false);
@@ -25,7 +25,7 @@ const EventList: React.FC = () => {
   };
 
   const deleteEventHandler = () => {
-    setIsShowModal(true);
+    toggleModalShow();
   };
 
   const sendData = async (arg: Event[]) => {
@@ -37,10 +37,10 @@ const EventList: React.FC = () => {
     setData(newData);
     sendData(newData);
     toast.warning("You've deleted an event");
-    setIsShowModal(false);
+    toggleModalShow();
   };
   const onDeclineHandler = () => {
-    setIsShowModal(false);
+    toggleModalShow();
   };
 
   return (
