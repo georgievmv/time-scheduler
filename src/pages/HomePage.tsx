@@ -11,22 +11,15 @@ import Bar from "../components/Bar";
 import LoadingBar from "../components/LoadingBar";
 import pieChartIcon from "../assets/pie-chart-fill.svg";
 import { toast } from "react-toastify";
+import DateInput from "../components/DateInput";
+import { dataReformer } from "../utils/reformDataForBar";
 
 const HomePage = () => {
-  const {
-    setDate,
-    date,
-    data,
-    setIsLoading,
-    onLogout,
-    setData,
-    setAdding,
-    loading,
-  } = useContext(Context);
+  const { date, data, setIsLoading, onLogout, setData, setAdding, loading } =
+    useContext(Context);
   const firestore = useFireStore();
   const [isPieChart, setIsPieChart] = useState(false);
-  const filteredData = data.filter((elem) => elem.day === date);
-
+  const filteredData = dataReformer(data, date);
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
@@ -48,13 +41,6 @@ const HomePage = () => {
     }
   };
 
-  const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    if (e.target.value.length <= 10) {
-      setDate(e.currentTarget.value);
-    }
-  };
-
   const addNewTaskButtonHandler = () => {
     setAdding(true);
   };
@@ -66,11 +52,7 @@ const HomePage = () => {
       ) : (
         <div className="home-page-container">
           <Form.Group className="mb-3">
-            <Form.Control
-              type="date"
-              value={date}
-              onChange={dateChangeHandler}
-            />
+            <DateInput />
           </Form.Group>
 
           {isPieChart && !!filteredData.length && <Pie />}

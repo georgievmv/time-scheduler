@@ -9,10 +9,12 @@ import { timeTransformer } from "../utils/timeTransformer";
 import { dataReformer } from "../utils/reformDataForBar";
 import BarHoverInfo from "./BarHoverInfo";
 import { randomTimeGenerator } from "../utils/timeTransformer";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DateInput from "./DateInput";
 
 const AddEvent = () => {
+  const [recurrence, setRecurrence] = useState("");
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
@@ -20,8 +22,10 @@ const AddEvent = () => {
   const [eventTitle, setEventTitle] = useState("");
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
-  const { setDate, date, data, setAdding, setData } = useContext(Context);
-  const filteredData = data.filter((elem) => elem.day === date);
+  const { date, data, setAdding, setData } = useContext(Context);
+  const filteredData = data.filter(
+    (elem) => elem.day === date || elem.recurrence === "day"
+  );
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
     filteredData.forEach((elem) => {
@@ -68,11 +72,14 @@ const AddEvent = () => {
     setHover("");
   };
 
-  const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length <= 10) {
-      setDate(e.currentTarget.value);
+  const checkChangeHandler = (e: React.FormEvent) => {
+    if (recurrence === e.currentTarget.id) {
+      setRecurrence("");
+    } else {
+      setRecurrence(e.currentTarget.id);
     }
   };
+
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     const randomId = Math.floor((1 + Math.random()) * 0x10000)
@@ -89,6 +96,7 @@ const AddEvent = () => {
       color: `#${randomColor}`,
       start: startTime,
       end: endTime,
+      recurrence,
     };
     setData((prevState) => {
       return [...prevState, newEvent];
@@ -111,10 +119,29 @@ const AddEvent = () => {
           type="text"
         />
       </Form.Group>
-
       <Form.Group>
         <Form.Label>Date:</Form.Label>
-        <Form.Control type="date" value={date} onChange={dateChangeHandler} />
+        <DateInput />
+      </Form.Group>
+      <Form.Group>
+        <Form.Check
+          disabled={recurrence === "work" || recurrence === "weekend"}
+          id="day"
+          onChange={checkChangeHandler}
+          label="Repeat every day"
+        />
+        <Form.Check
+          id="work"
+          disabled={recurrence === "day" || recurrence === "weekend"}
+          onChange={checkChangeHandler}
+          label="Repeat every work day"
+        />
+        <Form.Check
+          disabled={recurrence === "day" || recurrence === "work"}
+          id="weekend"
+          onChange={checkChangeHandler}
+          label="Repeat every weekend"
+        />
       </Form.Group>
       <div
         style={{
@@ -135,43 +162,40 @@ const AddEvent = () => {
       </div>
       <div className="slider">
         {!!data.length &&
-          //TODO: better declare a function for logic below
-          dataReformer(data)
-            .filter((elem) => elem.day === date)
-            .map((elem, i, arr) => {
-              return (
-                <div
-                  className="taken-hours"
-                  id={elem.id}
-                  onClick={(e) => {
-                    setHover(e.currentTarget.id);
-                  }}
-                  onMouseEnter={hoverHandler}
-                  onMouseOut={hoverOutHandler}
-                  key={elem.id}
-                  style={
-                    i === data.length - 1
-                      ? {
-                          border: "none",
-                          width: `${elem.percent}%`,
-                          left: `${elem.startPercentage}%`,
-                        }
-                      : {
-                          width: `${elem.percent}%`,
-                          left: `${elem.startPercentage}%`,
-                        }
-                  }
-                >
-                  {hover === elem.id && (
-                    <BarHoverInfo
-                      title={arr[i]?.title}
-                      start={arr[i]?.start}
-                      end={arr[i]?.end}
-                    />
-                  )}
-                </div>
-              );
-            })}
+          dataReformer(data, date).map((elem, i, arr) => {
+            return (
+              <div
+                className="taken-hours"
+                id={elem.id}
+                onClick={(e) => {
+                  setHover(e.currentTarget.id);
+                }}
+                onMouseEnter={hoverHandler}
+                onMouseOut={hoverOutHandler}
+                key={elem.id}
+                style={
+                  i === data.length - 1
+                    ? {
+                        border: "none",
+                        width: `${elem.percent}%`,
+                        left: `${elem.startPercentage}%`,
+                      }
+                    : {
+                        width: `${elem.percent}%`,
+                        left: `${elem.startPercentage}%`,
+                      }
+                }
+              >
+                {hover === elem.id && (
+                  <BarHoverInfo
+                    title={arr[i]?.title}
+                    start={arr[i]?.start}
+                    end={arr[i]?.end}
+                  />
+                )}
+              </div>
+            );
+          })}
 
         <Slider
           onChange={sliderChangeHandler}

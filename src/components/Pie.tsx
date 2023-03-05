@@ -10,6 +10,7 @@ export type Event = {
   color: string;
   start: number;
   end: number;
+  recurrence: string;
 };
 
 const Pie = () => {

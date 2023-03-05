@@ -7,6 +7,7 @@ import useFireStore from "../hooks/useFireStore";
 import { Event } from "./Pie";
 import { toast } from "react-toastify";
 import WarningModal from "./WarningModal";
+import { dataReformer } from "../utils/reformDataForBar";
 
 const EventList: React.FC = () => {
   const [isShowModal, setIsShowModal] = useState(false);
@@ -52,39 +53,36 @@ const EventList: React.FC = () => {
         onDecline={onDeclineHandler}
         onConfirm={onConfirmHandler}
       />
-      {data
-        .filter((elem) => elem.day === date)
-        .sort((a, b) => a.start - b.start)
-        .map((elem) => {
-          return (
-            <Card
-              id={elem.id}
-              onClick={onClickHandler}
-              key={elem.id}
-              style={{ cursor: "pointer" }}
-              className="m-3"
-              border="success"
-            >
-              <Card.Body>
-                <Card.Title>{elem.title}</Card.Title>
-                <Card.Text>
-                  {`from ${timeTransformer(elem.start)} to ${timeTransformer(
-                    elem.end
-                  )}`}
-                </Card.Text>
-              </Card.Body>
-              {deleting && selectedId === elem.id.toString() && (
-                <Button
-                  type="button"
-                  onClick={deleteEventHandler}
-                  variant="danger"
-                >
-                  Delete
-                </Button>
-              )}
-            </Card>
-          );
-        })}
+      {dataReformer(data, date).map((elem) => {
+        return (
+          <Card
+            id={elem.id}
+            onClick={onClickHandler}
+            key={elem.id}
+            style={{ cursor: "pointer" }}
+            className="m-3"
+            border="success"
+          >
+            <Card.Body>
+              <Card.Title>{elem.title}</Card.Title>
+              <Card.Text>
+                {`from ${timeTransformer(elem.start)} to ${timeTransformer(
+                  elem.end
+                )}`}
+              </Card.Text>
+            </Card.Body>
+            {deleting && selectedId === elem.id.toString() && (
+              <Button
+                type="button"
+                onClick={deleteEventHandler}
+                variant="danger"
+              >
+                Delete
+              </Button>
+            )}
+          </Card>
+        );
+      })}
     </>
   );
 };

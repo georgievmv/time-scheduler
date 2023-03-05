@@ -18,37 +18,34 @@ const Bar = () => {
   return (
     <div className="bar-container">
       {data.length > 0 &&
-        dataReformer(data)
-          .filter((elem) => elem.day === date)
-          .sort((a, b) => a.start - b.start)
-          .map((elem, i, arr) => {
-            return (
-              <div
-                id={elem.id}
-                onClick={(e) => {
-                  setHover(e.currentTarget.id);
-                }}
-                onMouseEnter={hoverHandler}
-                onMouseOut={hoverOutHandler}
-                key={elem.id}
-                className="progress-bar bg-success bar-element"
-                style={{
-                  borderRight:
-                    elem.end === arr[i + 1]?.start ? "1px solid black" : "none",
-                  width: `${elem.percent}%`,
-                  left: `${elem.startPercentage}%`,
-                }}
-              >
-                {hover === elem.id && (
-                  <BarHoverInfo
-                    title={arr[i].title}
-                    start={arr[i].start}
-                    end={arr[i].end}
-                  />
-                )}
-              </div>
-            );
-          })}
+        dataReformer(data, date).map((elem, i, arr) => {
+          return (
+            <div
+              id={elem.id}
+              onClick={(e) => {
+                setHover(e.currentTarget.id);
+              }}
+              onMouseEnter={hoverHandler}
+              onMouseOut={hoverOutHandler}
+              key={elem.id}
+              className="progress-bar bg-success bar-element"
+              style={{
+                borderRight:
+                  elem.end === arr[i + 1]?.start ? "1px solid black" : "none",
+                width: `${elem.percent}%`,
+                left: `${elem.startPercentage}%`,
+              }}
+            >
+              {hover === elem.id && (
+                <BarHoverInfo
+                  title={arr[i].title}
+                  start={arr[i].start}
+                  end={arr[i].end}
+                />
+              )}
+            </div>
+          );
+        })}
     </div>
   );
 };
