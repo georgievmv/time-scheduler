@@ -14,7 +14,9 @@ import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
 
 const AddEvent = () => {
-  const [recurrence, setRecurrence] = useState("");
+  const [recurrence, setRecurrence] = useState<"work" | "day" | "weekend" | "">(
+    ""
+  );
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
@@ -76,7 +78,7 @@ const AddEvent = () => {
     if (recurrence === e.currentTarget.id) {
       setRecurrence("");
     } else {
-      setRecurrence(e.currentTarget.id);
+      setRecurrence(e.currentTarget.id as "work" | "day" | "weekend" | "");
     }
   };
 
@@ -97,6 +99,7 @@ const AddEvent = () => {
       start: startTime,
       end: endTime,
       recurrence,
+      exclude: "",
     };
     setData((prevState) => {
       return [...prevState, newEvent];

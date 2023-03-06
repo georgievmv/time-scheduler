@@ -10,7 +10,8 @@ export type Event = {
   color: string;
   start: number;
   end: number;
-  recurrence: string;
+  recurrence: "work" | "day" | "weekend" | "";
+  exclude: string;
 };
 
 const Pie = () => {
