@@ -1,17 +1,21 @@
 import { PieChart } from "react-minimal-pie-chart";
 import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
+import { dataReformer } from "../utils/reformDataForBar";
 
 export type Event = {
-  day: string;
-  id: string;
-  title: string;
-  value: number;
-  color: string;
   start: number;
   end: number;
-  recurrence: "work" | "day" | "weekend" | "";
-  exclude: string;
+  recurrence: "30" | "60" | "90" | "";
+  id: string;
+  color: string;
+  value: number;
+  title: string;
+};
+
+export type EventDate = {
+  date: string;
+  event: Event[];
 };
 
 const Pie = () => {
@@ -22,25 +26,19 @@ const Pie = () => {
     setIsShowingPercentage((prevState) => !prevState);
   };
 
-  const valuesArr = data
-    .filter((elem) => elem.day === date)
-    .map((elem) => elem.value);
+  const valuesArr = dataReformer(data, date).map((elem) => elem.value);
 
   const sumOfValues = valuesArr.reduce((a, b) => a + b);
   const percentageConversionRatio = 100 / sumOfValues;
-  const reformedData = data
-    .filter((elem) => elem.day === date)
-    .map((elem) => {
-      return { ...elem, value: elem.value * percentageConversionRatio };
-    });
+  const reformedDataForPie = dataReformer(data, date).map((elem) => {
+    return { ...elem, value: elem.value * percentageConversionRatio };
+  });
   return (
     <PieChart
       className="pie"
       onClick={onClickHandler}
       label={({ dataEntry }) =>
-        !isShowingPercentage
-          ? `${dataEntry.title}`
-          : `${Math.round(dataEntry.value)}%`
+        !isShowingPercentage ? `${dataEntry.title}` : `${Math.round(dataEntry.value)}%`
       }
       animate
       animationDuration={700}
@@ -48,7 +46,7 @@ const Pie = () => {
       labelPosition={65}
       lineWidth={70}
       totalValue={100}
-      data={reformedData}
+      data={reformedDataForPie}
     />
   );
 };

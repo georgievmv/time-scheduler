@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Event } from "../components/Pie";
+import { EventDate } from "../components/Pie";
 type ContextObj = {
   setDate: (arg: string) => void;
   date: string;
@@ -12,8 +12,8 @@ type ContextObj = {
   onLogout: () => void;
   onLogin: (arg: string) => void;
   isLoggedIn: boolean;
-  setData: (arg: Event[] | ((arg: Event[]) => Event[])) => void;
-  data: Event[] | [];
+  setData: (arg: EventDate[] | ((arg: EventDate[]) => EventDate[])) => void;
+  data: EventDate[] | [];
 };
 
 export const Context = React.createContext<ContextObj>({
@@ -27,13 +27,13 @@ export const Context = React.createContext<ContextObj>({
   onLogout: () => {},
   onLogin: (arg: string) => {},
   isLoggedIn: false,
-  setData: (arg: Event[] | ((arg: Event[]) => Event[])) => {},
+  setData: (arg: EventDate[] | ((arg: EventDate[]) => EventDate[])) => {},
   data: [],
 });
 
 const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [data, setData] = useState<Event[] | []>([]);
+  const [data, setData] = useState<EventDate[] | []>([]);
   const [uid, setUid] = useState<string>("");
   const [adding, setAdding] = useState(false);
   const [loading, setIsLoading] = useState(false);

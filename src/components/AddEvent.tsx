@@ -12,11 +12,24 @@ import { randomTimeGenerator } from "../utils/timeTransformer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
+import { Event } from "./Pie";
+import { fromDateToString } from "../utils/fromDateToString";
+
+///Setting up addDays method to Date object
+declare global {
+  interface Date {
+    addDays(days: number): Date;
+  }
+}
+Date.prototype.addDays = function (days: number) {
+  let date = new Date(this.valueOf());
+  date.setDate(date.getDate() + days);
+  return date;
+};
+///////////
 
 const AddEvent = () => {
-  const [recurrence, setRecurrence] = useState<"work" | "day" | "weekend" | "">(
-    ""
-  );
+  const [recurrence, setRecurrence] = useState<"30" | "60" | "90" | "">("");
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
@@ -25,12 +38,11 @@ const AddEvent = () => {
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
   const { date, data, setAdding, setData } = useContext(Context);
-  const filteredData = data.filter(
-    (elem) => elem.day === date || elem.recurrence === "day"
-  );
+  const filteredData = data.filter((elem) => elem.date === date);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
-    filteredData.forEach((elem) => {
+
+    filteredData[0]?.event?.forEach((elem) => {
       if (
         (value[0] < elem.start && value[1] > elem.start) ||
         (value[0] >= elem.start && value[0] < elem.end) ||
@@ -43,8 +55,8 @@ const AddEvent = () => {
     setEndTime(value[1]);
   };
   useEffect(() => {
-    if (filteredData.length > 0) {
-      const randomTime = randomTimeGenerator(filteredData);
+    if (filteredData[0]?.event?.length > 0) {
+      const randomTime = randomTimeGenerator(filteredData[0].event);
       setStartTime(randomTime[0]);
       setEndTime(randomTime[1]);
     }
@@ -60,6 +72,7 @@ const AddEvent = () => {
         setAdding(false);
       }
     };
+    console.log("req");
     sendData();
   }, [data]);
 
@@ -75,11 +88,7 @@ const AddEvent = () => {
   };
 
   const checkChangeHandler = (e: React.FormEvent) => {
-    if (recurrence === e.currentTarget.id) {
-      setRecurrence("");
-    } else {
-      setRecurrence(e.currentTarget.id as "work" | "day" | "weekend" | "");
-    }
+    setRecurrence(e.currentTarget.id as "30" | "60" | "90" | "");
   };
 
   const formSubmitHandler = (e: React.FormEvent) => {
@@ -88,25 +97,58 @@ const AddEvent = () => {
       .toString(16)
       .substring(1);
 
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     const value = (endTime - startTime) / 60;
-    const newEvent = {
-      day: date,
+    const newEvent: Event = {
       id: randomId,
       title: eventTitle,
       value: value,
-      color: `#${randomColor}`,
+      color: randomColor,
       start: startTime,
       end: endTime,
       recurrence,
-      exclude: "",
     };
-    setData((prevState) => {
-      return [...prevState, newEvent];
-    });
-    toast.success("You've successfully added a new event", {
-      position: toast.POSITION.TOP_CENTER,
-    });
+
+    const getDates = (startDate: string, stopDate: string) => {
+      let dateArray = new Array();
+      let currentDate = new Date(startDate);
+      while (currentDate <= new Date(stopDate)) {
+        dateArray.push(fromDateToString(currentDate));
+        currentDate = currentDate.addDays(1);
+      }
+      return dateArray;
+    };
+
+    if (recurrence) {
+      const lastDate = new Date(date).addDays(parseInt(recurrence));
+      const dates = getDates(date, fromDateToString(lastDate));
+      const newData = dates.map((elem) => {
+        return {
+          date: elem,
+          event: [newEvent],
+        };
+      });
+      setData(newData);
+      toast.success("You've successfully added a new event", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    } else {
+      setData((prevState) => {
+        if (prevState.find((elem) => elem.date === date)) {
+          let newState = [...prevState];
+          const day = prevState.filter((elem) => elem.date === date);
+          const indexToSplice = prevState.indexOf(day[0]);
+          day[0].event.push(newEvent);
+          const newDay = { date, event: day[0].event };
+          newState.splice(indexToSplice, 1, newDay);
+          return newState;
+        }
+        return [...prevState, { date, event: [newEvent] }];
+      });
+      toast.success("You've successfully added a new event", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
   };
 
   return (
@@ -128,22 +170,25 @@ const AddEvent = () => {
       </Form.Group>
       <Form.Group>
         <Form.Check
-          disabled={recurrence === "work" || recurrence === "weekend"}
-          id="day"
+          name="group"
+          type="radio"
+          id="30"
           onChange={checkChangeHandler}
-          label="Repeat every day"
+          label="Repeat for 30 days"
         />
         <Form.Check
-          id="work"
-          disabled={recurrence === "day" || recurrence === "weekend"}
+          name="group"
+          type="radio"
+          id="60"
           onChange={checkChangeHandler}
-          label="Repeat every work day"
+          label="Repeat for 60 days"
         />
         <Form.Check
-          disabled={recurrence === "day" || recurrence === "work"}
-          id="weekend"
+          name="group"
+          type="radio"
+          id="90"
           onChange={checkChangeHandler}
-          label="Repeat every weekend"
+          label="Repeat for 90 days"
         />
       </Form.Group>
       <div
@@ -164,7 +209,7 @@ const AddEvent = () => {
         </Form.Group>
       </div>
       <div className="slider">
-        {!!data.length &&
+        {filteredData[0]?.event.length &&
           dataReformer(data, date).map((elem, i, arr) => {
             return (
               <div
@@ -190,11 +235,7 @@ const AddEvent = () => {
                 }
               >
                 {hover === elem.id && (
-                  <BarHoverInfo
-                    title={arr[i]?.title}
-                    start={arr[i]?.start}
-                    end={arr[i]?.end}
-                  />
+                  <BarHoverInfo title={arr[i]?.title} start={arr[i]?.start} end={arr[i]?.end} />
                 )}
               </div>
             );
@@ -239,9 +280,7 @@ const AddEvent = () => {
       </div>
 
       {IsEventAlreadyPlaned && (
-        <p style={{ position: "absolute" }}>
-          You have an event planed in this timespan
-        </p>
+        <p style={{ position: "absolute" }}>You have an event planed in this timespan</p>
       )}
       <div style={{ textAlign: "center" }}>
         <Button
@@ -252,12 +291,7 @@ const AddEvent = () => {
         >
           Add
         </Button>
-        <Button
-          className="mt-5 mx-5"
-          type="button"
-          onClick={onCancelAdding}
-          variant="danger"
-        >
+        <Button className="mt-5 mx-5" type="button" onClick={onCancelAdding} variant="danger">
           Cancel
         </Button>
       </div>

@@ -7,17 +7,16 @@ import { dataReformer } from "../utils/reformDataForBar";
 const Bar = () => {
   const { data, date } = useContext(Context);
   const [hover, setHover] = useState("");
-
+  const filteredData = data.filter((elem) => elem.date === date);
   const hoverHandler = (e: React.MouseEvent) => {
     setHover(e.currentTarget.id);
   };
   const hoverOutHandler = (e: React.MouseEvent) => {
     setHover("");
   };
-
   return (
     <div className="bar-container">
-      {data.length > 0 &&
+      {filteredData[0]?.event?.length > 0 &&
         dataReformer(data, date).map((elem, i, arr) => {
           return (
             <div

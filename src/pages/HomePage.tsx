@@ -19,7 +19,7 @@ const HomePage = () => {
     useContext(Context);
   const firestore = useFireStore();
   const [isPieChart, setIsPieChart] = useState(false);
-  const filteredData = dataReformer(data, date);
+  const filteredData = data.filter((elem) => elem.date === date);
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);
@@ -57,7 +57,7 @@ const HomePage = () => {
 
           {isPieChart && !!filteredData.length && <Pie />}
           <Bar />
-          {!filteredData.length ? (
+          {!filteredData[0]?.event?.length ? (
             <p style={{ textAlign: "center" }}>
               You haven`t added any events for this day yet
             </p>
