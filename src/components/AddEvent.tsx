@@ -30,7 +30,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
-  const [recurrence, setRecurrence] = useState<Recurrence>();
+  const [recurrence, setRecurrence] = useState<Recurrence>("");
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
@@ -42,7 +42,6 @@ const AddEvent = () => {
   const filteredData = data.filter((elem) => elem.date === date);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
-
     filteredData[0]?.event?.forEach((elem) => {
       if (
         (value[0] < elem.start && value[1] > elem.start) ||
@@ -52,6 +51,7 @@ const AddEvent = () => {
         setIsEventAlreadyPlaned(true);
       }
     });
+    console.log(value[0]);
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
@@ -61,7 +61,7 @@ const AddEvent = () => {
       setStartTime(randomTime[0]);
       setEndTime(randomTime[1]);
     }
-  }, [date, filteredData]);
+  }, [date]);
 
   useEffect(() => {
     const sendData = async () => {

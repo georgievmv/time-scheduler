@@ -1,4 +1,4 @@
-export type Recurrence = "30" | "60" | "90" | undefined;
+export type Recurrence = "30" | "60" | "90" | "";
 
 export type Event = {
   start: number;
