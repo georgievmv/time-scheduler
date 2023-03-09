@@ -27,20 +27,19 @@ const Bar = () => {
               onMouseEnter={hoverHandler}
               onMouseOut={hoverOutHandler}
               key={elem.id}
-              className="progress-bar bg-success bar-element"
+              className={
+                elem.recurrence
+                  ? "progress-bar bg-secondary bar-element"
+                  : "progress-bar bg-success bar-element"
+              }
               style={{
-                borderRight:
-                  elem.end === arr[i + 1]?.start ? "1px solid black" : "none",
+                borderRight: elem.end === arr[i + 1]?.start ? "1px solid black" : "none",
                 width: `${elem.percent}%`,
                 left: `${elem.startPercentage}%`,
               }}
             >
               {hover === elem.id && (
-                <BarHoverInfo
-                  title={arr[i].title}
-                  start={arr[i].start}
-                  end={arr[i].end}
-                />
+                <BarHoverInfo title={arr[i].title} start={arr[i].start} end={arr[i].end} />
               )}
             </div>
           );

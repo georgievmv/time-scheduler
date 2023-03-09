@@ -12,15 +12,16 @@ import { randomTimeGenerator } from "../utils/timeTransformer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
-import { Event } from "./Pie";
+import { Event, Recurrence } from "../types/types";
 import { fromDateToString } from "../utils/fromDateToString";
 
-///Setting up addDays method to Date object
+//Setting up addDays method to Date object
 declare global {
   interface Date {
     addDays(days: number): Date;
   }
 }
+// eslint-disable-next-line no-extend-native
 Date.prototype.addDays = function (days: number) {
   let date = new Date(this.valueOf());
   date.setDate(date.getDate() + days);
@@ -29,7 +30,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
-  const [recurrence, setRecurrence] = useState<"30" | "60" | "90" | "">("");
+  const [recurrence, setRecurrence] = useState<Recurrence>();
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
@@ -55,12 +56,12 @@ const AddEvent = () => {
     setEndTime(value[1]);
   };
   useEffect(() => {
-    if (filteredData[0]?.event?.length > 0) {
+    if (!!filteredData[0]?.event?.length) {
       const randomTime = randomTimeGenerator(filteredData[0].event);
       setStartTime(randomTime[0]);
       setEndTime(randomTime[1]);
     }
-  }, [date]);
+  }, [date, filteredData]);
 
   useEffect(() => {
     const sendData = async () => {
@@ -72,9 +73,8 @@ const AddEvent = () => {
         setAdding(false);
       }
     };
-    console.log("req");
     sendData();
-  }, [data]);
+  }, [data, firestore, isInitial, setAdding]);
 
   const onCancelAdding = () => {
     setAdding(false);
@@ -88,7 +88,7 @@ const AddEvent = () => {
   };
 
   const checkChangeHandler = (e: React.FormEvent) => {
-    setRecurrence(e.currentTarget.id as "30" | "60" | "90" | "");
+    setRecurrence(e.currentTarget.id as Recurrence);
   };
 
   const formSubmitHandler = (e: React.FormEvent) => {
@@ -110,7 +110,7 @@ const AddEvent = () => {
     };
 
     const getDates = (startDate: string, stopDate: string) => {
-      let dateArray = new Array();
+      const dateArray = [];
       let currentDate = new Date(startDate);
       while (currentDate <= new Date(stopDate)) {
         dateArray.push(fromDateToString(currentDate));
@@ -122,11 +122,20 @@ const AddEvent = () => {
     if (recurrence) {
       const lastDate = new Date(date).addDays(parseInt(recurrence));
       const dates = getDates(date, fromDateToString(lastDate));
-      const newData = dates.map((elem) => {
-        return {
-          date: elem,
-          event: [newEvent],
-        };
+      const newData = dates.map((elem, i) => {
+        if (!!data[i]?.event?.length) {
+          const eventArrayWithAlreadyExistingEvent = [...data[i].event];
+          eventArrayWithAlreadyExistingEvent.push(newEvent);
+          return {
+            date: elem,
+            event: eventArrayWithAlreadyExistingEvent,
+          };
+        } else {
+          return {
+            date: elem,
+            event: [newEvent],
+          };
+        }
       });
       setData(newData);
       toast.success("You've successfully added a new event", {
@@ -136,10 +145,10 @@ const AddEvent = () => {
       setData((prevState) => {
         if (prevState.find((elem) => elem.date === date)) {
           let newState = [...prevState];
-          const day = prevState.filter((elem) => elem.date === date);
-          const indexToSplice = prevState.indexOf(day[0]);
-          day[0].event.push(newEvent);
-          const newDay = { date, event: day[0].event };
+          const selectedDay = prevState.filter((elem) => elem.date === date);
+          const indexToSplice = prevState.indexOf(selectedDay[0]);
+          selectedDay[0].event.push(newEvent);
+          const newDay = { date, event: selectedDay[0].event };
           newState.splice(indexToSplice, 1, newDay);
           return newState;
         }

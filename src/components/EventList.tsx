@@ -4,36 +4,20 @@ import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
 import { timeTransformer } from "../utils/timeTransformer";
 import useFireStore from "../hooks/useFireStore";
-import { EventDate } from "./Pie";
+import { EventDate } from "../types/types";
 import { toast } from "react-toastify";
 import WarningModal from "./WarningModal";
 import { dataReformer } from "../utils/reformDataForBar";
 
-const data = [
-  {
-    date: "2023-03-10",
-    events: [
-      { start: "zavchera", end: "po pladne", id: 1 },
-      { start: "po purvi petli", end: "nikoga", id: 2 },
-    ],
-  },
-  {
-    date: "2023-03-11",
-    events: [
-      { start: "zavchera", end: "po pladne", id: 1 },
-      { start: "po purvi petli", end: "nikoga", id: 2 },
-    ],
-  },
-];
 const EventList: React.FC = () => {
   const [isShowModal, setIsShowModal] = useState(false);
-  const [isShowInstanceModal, setIsShowIntanceModal] = useState(false);
+  const [isShowAllEventModal, setIsShowAllEventModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
   const { date, data, setData } = useContext(Context);
   const toggleEventModalShow = () => setIsShowModal(!isShowModal);
-  const toggleIntanceModalShow = () => setIsShowIntanceModal(!isShowInstanceModal);
+  const toggleAllEventModalShow = () => setIsShowAllEventModal(!isShowAllEventModal);
 
   const onClickHandler = (e: React.MouseEvent) => {
     if (e.currentTarget.id === selectedId && deleting) {
@@ -48,8 +32,22 @@ const EventList: React.FC = () => {
     await firestore("updateDoc", { data: arg });
   };
 
-  //Deleting instance
-
+  //Deleting All event
+  const deleteAllEventHandler = () => {
+    toggleAllEventModalShow();
+  };
+  const onConfirmDeleteAllEventHandler = () => {
+    let newData = [...data];
+    newData.forEach((eventArr) => {
+      eventArr.event = eventArr.event.filter((event) => event.id !== selectedId);
+    });
+    setData(newData);
+    sendData(newData);
+    toggleAllEventModalShow();
+  };
+  const onDeclineDeleteAllEventHandler = () => {
+    toggleAllEventModalShow();
+  };
   ////////
 
   ////Deleting Event
@@ -80,13 +78,13 @@ const EventList: React.FC = () => {
         onDecline={onDeclineDeleteEventHandler}
         onConfirm={onConfirmDeleteEventHandler}
       />
-      {/*   <WarningModal
+      <WarningModal
         title="Deleting event"
         message="Are you sure you want to delete this instance of an event?"
-        show={isShowInstanceModal}
-        onDecline={onDeclineDeleteInstanceHandler}
-        onConfirm={onConfirmDeleteInstanceHandler}
-      /> */}
+        show={isShowAllEventModal}
+        onDecline={onDeclineDeleteAllEventHandler}
+        onConfirm={onConfirmDeleteAllEventHandler}
+      />
       {dataReformer(data, date)?.map((elem) => {
         return (
           <Card
@@ -114,15 +112,17 @@ const EventList: React.FC = () => {
                 >
                   Delete
                 </Button>
-                {/*    <Button
-                  id="delete-instance"
-                  className="delete-button"
-                  type="button"
-                  onClick={deleteInstanceHandler}
-                  variant="secondary"
-                >
-                  Delete instance
-                </Button> */}
+                {elem.recurrence && (
+                  <Button
+                    id="delete-instance"
+                    className="delete-button"
+                    type="button"
+                    onClick={deleteAllEventHandler}
+                    variant="secondary"
+                  >
+                    Delete all occurences
+                  </Button>
+                )}
               </div>
             )}
           </Card>

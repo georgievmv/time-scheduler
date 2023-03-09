@@ -1,4 +1,4 @@
-import { Event, EventDate } from "../components/Pie";
+import { Event, EventDate } from "../types/types";
 
 export const dataReformer = (data: EventDate[], date: string) => {
   const filteredData = data.filter((elem) => elem.date === date);
@@ -16,8 +16,7 @@ export const dataReformer = (data: EventDate[], date: string) => {
         end: elem.end,
         id: elem.id,
         startPercentage: elem.start / minutesToPercentage,
-        percent:
-          elem.end / minutesToPercentage - elem.start / minutesToPercentage,
+        percent: elem.end / minutesToPercentage - elem.start / minutesToPercentage,
       };
     })
     .sort((a, b) => a.start - b.start);

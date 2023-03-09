@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { EventDate } from "../components/Pie";
+import { EventDate } from "../types/types";
 type ContextObj = {
   setDate: (arg: string) => void;
   date: string;
@@ -42,9 +42,7 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
       ? "0" + (new Date().getMonth() + 1)
       : new Date().getMonth() + 1
   }-${
-    new Date().getDate().toString().length === 1
-      ? "0" + new Date().getDate()
-      : new Date().getDate()
+    new Date().getDate().toString().length === 1 ? "0" + new Date().getDate() : new Date().getDate()
   }`;
   //TODO:move up with other states
   const [date, setDate] = useState(today);
@@ -72,8 +70,6 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
     data,
   };
 
-  return (
-    <Context.Provider value={contextValue}>{props.children}</Context.Provider>
-  );
+  return <Context.Provider value={contextValue}>{props.children}</Context.Provider>;
 };
 export default ContextProvider;
