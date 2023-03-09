@@ -74,7 +74,7 @@ const AddEvent = () => {
       }
     };
     sendData();
-  }, [data, firestore, isInitial, setAdding]);
+  }, [data]);
 
   const onCancelAdding = () => {
     setAdding(false);
