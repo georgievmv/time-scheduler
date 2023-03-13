@@ -1,6 +1,6 @@
-import { Event, EventDate } from "../types/types";
+import { Event, EventDate, ReformedEvent } from "../types/types";
 
-export const dataReformer = (data: EventDate[], date: string) => {
+export const dataReformer = (data: EventDate[], date: string): ReformedEvent[] => {
   const filteredData = data.filter((elem) => elem.date === date);
   const minutesToPercentage = 14.4;
   /*  const selectedDay = new Date(date).getDay();

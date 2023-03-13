@@ -7,13 +7,14 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { timeTransformer } from "../utils/timeTransformer";
 import { dataReformer } from "../utils/reformDataForBar";
-import BarHoverInfo from "./BarHoverInfo";
+import BarHoverInfo from "./Bar/BarHoverInfo";
 import { randomTimeGenerator } from "../utils/timeTransformer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
 import { Event, Recurrence } from "../types/types";
 import { fromDateToString } from "../utils/fromDateToString";
+import BarElement from "./Bar/BarElement";
 
 //Setting up addDays method to Date object
 declare global {
@@ -30,6 +31,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
+  const [widthOfTakenHoursBar, setWidthOfTakenHoursBar] = useState<number>();
   const [recurrence, setRecurrence] = useState<Recurrence>("");
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
@@ -81,6 +83,8 @@ const AddEvent = () => {
   };
 
   const hoverHandler = (e: React.MouseEvent) => {
+    setWidthOfTakenHoursBar(document.getElementById(e.currentTarget.id)?.clientWidth);
+
     setHover(e.currentTarget.id);
   };
   const hoverOutHandler = () => {
@@ -220,34 +224,7 @@ const AddEvent = () => {
       <div className="slider">
         {filteredData[0]?.event.length &&
           dataReformer(data, date).map((elem, i, arr) => {
-            return (
-              <div
-                className="taken-hours"
-                id={elem.id}
-                onClick={(e) => {
-                  setHover(e.currentTarget.id);
-                }}
-                onMouseEnter={hoverHandler}
-                onMouseOut={hoverOutHandler}
-                key={elem.id}
-                style={
-                  i === data.length - 1
-                    ? {
-                        border: "none",
-                        width: `${elem.percent}%`,
-                        left: `${elem.startPercentage}%`,
-                      }
-                    : {
-                        width: `${elem.percent}%`,
-                        left: `${elem.startPercentage}%`,
-                      }
-                }
-              >
-                {hover === elem.id && (
-                  <BarHoverInfo title={arr[i]?.title} start={arr[i]?.start} end={arr[i]?.end} />
-                )}
-              </div>
-            );
+            return <BarElement className="taken-hours" elem={elem} i={i} arr={arr} />;
           })}
 
         <Slider
