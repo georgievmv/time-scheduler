@@ -8,7 +8,7 @@ const BarHoverInfo: React.FC<{
   start: number;
   end: number;
 }> = (props) => {
-  let [styleObject, setStyleObject] = useState({});
+  let [styleObject, setStyleObject] = useState<{}>({ opacity: "0" });
 
   const hoverInfoRef = useRef<HTMLDivElement | null>(null);
   const { widthOfBar, title, start, end } = props;
