@@ -1,17 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Card } from "react-bootstrap";
-import { timeTransformer } from "../utils/timeTransformer";
+import { timeTransformer } from "../../utils/timeTransformer";
 
 const BarHoverInfo: React.FC<{
-  widthOfBar?: number | undefined;
+  widthOfBar?: number;
   title: string;
   start: number;
   end: number;
-}> = (props) => {
-  let [styleObject, setStyleObject] = useState<{}>({ opacity: "0" });
-
+}> = ({ widthOfBar, title, start, end }) => {
+  const [styleObject, setStyleObject] = useState<{}>({ opacity: "0" });
   const hoverInfoRef = useRef<HTMLDivElement | null>(null);
-  const { widthOfBar, title, start, end } = props;
   useEffect(() => {
     if (hoverInfoRef.current != null && hoverInfoRef.current.getBoundingClientRect().left < 0) {
       setStyleObject({ left: "0" });

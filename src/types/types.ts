@@ -14,3 +14,15 @@ export type EventDate = {
   date: string;
   event: Event[];
 };
+
+export type ReformedEvent = {
+  color: string;
+  value: number;
+  recurrence: Recurrence;
+  title: string;
+  start: number;
+  end: number;
+  id: string;
+  startPercentage: number;
+  percent: number;
+};
