@@ -1,14 +1,18 @@
 import React from "react";
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { Context } from "../store/app-context";
 import BarHoverInfo from "./BarHoverInfo";
 import { dataReformer } from "../utils/reformDataForBar";
 
 const Bar = () => {
   const { data, date } = useContext(Context);
+  const [widthOfBar, setWidthOfBar] = useState<number>();
   const [hover, setHover] = useState("");
   const filteredData = data.filter((elem) => elem.date === date);
   const hoverHandler = (e: React.MouseEvent) => {
+    if (document.getElementById(e.currentTarget.id)) {
+      setWidthOfBar(document.getElementById(e.currentTarget.id)?.clientWidth);
+    }
     setHover(e.currentTarget.id);
   };
   const hoverOutHandler = (e: React.MouseEvent) => {
@@ -39,7 +43,12 @@ const Bar = () => {
               }}
             >
               {hover === elem.id && (
-                <BarHoverInfo title={arr[i].title} start={arr[i].start} end={arr[i].end} />
+                <BarHoverInfo
+                  widthOfBar={widthOfBar}
+                  title={arr[i].title}
+                  start={arr[i].start}
+                  end={arr[i].end}
+                />
               )}
             </div>
           );

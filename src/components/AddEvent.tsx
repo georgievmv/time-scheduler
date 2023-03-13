@@ -30,6 +30,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
+  const [widthOfTakenHoursBar, setWidthOfTakenHoursBar] = useState<number>();
   const [recurrence, setRecurrence] = useState<Recurrence>("");
   const [hover, setHover] = useState("");
   const [isInitial, setIsInitial] = useState(false);
@@ -81,6 +82,8 @@ const AddEvent = () => {
   };
 
   const hoverHandler = (e: React.MouseEvent) => {
+    setWidthOfTakenHoursBar(document.getElementById(e.currentTarget.id)?.clientWidth);
+
     setHover(e.currentTarget.id);
   };
   const hoverOutHandler = () => {
@@ -244,7 +247,12 @@ const AddEvent = () => {
                 }
               >
                 {hover === elem.id && (
-                  <BarHoverInfo title={arr[i]?.title} start={arr[i]?.start} end={arr[i]?.end} />
+                  <BarHoverInfo
+                    widthOfBar={widthOfTakenHoursBar}
+                    title={arr[i]?.title}
+                    start={arr[i]?.start}
+                    end={arr[i]?.end}
+                  />
                 )}
               </div>
             );
