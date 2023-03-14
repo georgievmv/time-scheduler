@@ -41,9 +41,8 @@
 }
 .bar-hover-container {
   position: absolute !important ;
-  width: max-content;
   right: 0;
-
+  width: max-content;
   top: 30px;
   z-index: 2;
 }
