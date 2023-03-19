@@ -7,7 +7,6 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { timeTransformer } from "../utils/timeTransformer";
 import { dataReformer } from "../utils/reformDataForBar";
-import BarHoverInfo from "./Bar/BarHoverInfo";
 import { randomTimeGenerator } from "../utils/timeTransformer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,9 +30,8 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
-  const [widthOfTakenHoursBar, setWidthOfTakenHoursBar] = useState<number>();
-  const [recurrence, setRecurrence] = useState<Recurrence>("");
-  const [hover, setHover] = useState("");
+  const [recurrence, setRecurrence] = useState<Recurrence>("no");
+  const [whenToRecur, setWhenToRecur] = useState("day");
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
   const [endTime, setEndTime] = useState(810);
@@ -82,17 +80,12 @@ const AddEvent = () => {
     setAdding(false);
   };
 
-  const hoverHandler = (e: React.MouseEvent) => {
-    setWidthOfTakenHoursBar(document.getElementById(e.currentTarget.id)?.clientWidth);
-
-    setHover(e.currentTarget.id);
-  };
-  const hoverOutHandler = () => {
-    setHover("");
-  };
-
   const checkChangeHandler = (e: React.FormEvent) => {
     setRecurrence(e.currentTarget.id as Recurrence);
+  };
+
+  const whenToRecurChangeHandler = (e: React.FormEvent) => {
+    setWhenToRecur(e.currentTarget.id);
   };
 
   const formSubmitHandler = (e: React.FormEvent) => {
@@ -117,31 +110,50 @@ const AddEvent = () => {
       const dateArray = [];
       let currentDate = new Date(startDate);
       while (currentDate <= new Date(stopDate)) {
-        dateArray.push(fromDateToString(currentDate));
-        currentDate = currentDate.addDays(1);
+        switch (whenToRecur) {
+          case "day":
+            dateArray.push(fromDateToString(currentDate));
+            currentDate = currentDate.addDays(1);
+            break;
+          case "workday":
+            if (currentDate.getDay() > 0 && currentDate.getDay() < 6) {
+              dateArray.push(fromDateToString(currentDate));
+            }
+            currentDate = currentDate.addDays(1);
+            break;
+          case "weekend":
+            if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+              dateArray.push(fromDateToString(currentDate));
+            }
+            currentDate = currentDate.addDays(1);
+            break;
+        }
       }
       return dateArray;
     };
 
-    if (recurrence) {
+    if (recurrence !== "no") {
       const lastDate = new Date(date).addDays(parseInt(recurrence));
       const dates = getDates(date, fromDateToString(lastDate));
-      const newData = dates.map((elem, i) => {
-        if (!!data[i]?.event?.length) {
-          const eventArrayWithAlreadyExistingEvent = [...data[i].event];
-          eventArrayWithAlreadyExistingEvent.push(newEvent);
-          return {
-            date: elem,
-            event: eventArrayWithAlreadyExistingEvent,
-          };
-        } else {
-          return {
-            date: elem,
-            event: [newEvent],
-          };
-        }
+      const newData = dates.map((date) => {
+        return {
+          date,
+          event: [newEvent],
+        };
       });
-      setData(newData);
+      setData((prevState) => {
+        let newState = [...prevState];
+        newData.forEach((elem) => {
+          const existingDate = prevState.find((event) => event.date === elem.date);
+          if (existingDate) {
+            const index = prevState.indexOf(existingDate);
+            newState[index].event.push(elem.event[0]);
+          } else {
+            newState.push(elem);
+          }
+        });
+        return newState;
+      });
       toast.success("You've successfully added a new event", {
         position: toast.POSITION.TOP_CENTER,
       });
@@ -181,29 +193,65 @@ const AddEvent = () => {
         <Form.Label>Date:</Form.Label>
         <DateInput />
       </Form.Group>
-      <Form.Group>
-        <Form.Check
-          name="group"
-          type="radio"
-          id="30"
-          onChange={checkChangeHandler}
-          label="Repeat for 30 days"
-        />
-        <Form.Check
-          name="group"
-          type="radio"
-          id="60"
-          onChange={checkChangeHandler}
-          label="Repeat for 60 days"
-        />
-        <Form.Check
-          name="group"
-          type="radio"
-          id="90"
-          onChange={checkChangeHandler}
-          label="Repeat for 90 days"
-        />
-      </Form.Group>
+      <div className="recurrence">
+        <Form.Group>
+          <Form.Check
+            defaultChecked
+            name="group"
+            type="radio"
+            id="no"
+            onChange={checkChangeHandler}
+            label="Do not repeat"
+          />
+          <Form.Check
+            name="group"
+            type="radio"
+            id="30"
+            onChange={checkChangeHandler}
+            label="Repeat for 30 days"
+          />
+          <Form.Check
+            name="group"
+            type="radio"
+            id="60"
+            onChange={checkChangeHandler}
+            label="Repeat for 60 days"
+          />
+          <Form.Check
+            name="group"
+            type="radio"
+            id="90"
+            onChange={checkChangeHandler}
+            label="Repeat for 90 days"
+          />
+        </Form.Group>
+        {recurrence !== "no" && (
+          <Form.Group>
+            <Form.Check
+              defaultChecked
+              name="when"
+              type="radio"
+              id="day"
+              onChange={whenToRecurChangeHandler}
+              label="Repeat every day"
+            />
+            <Form.Check
+              name="when"
+              type="radio"
+              id="weekend"
+              onChange={whenToRecurChangeHandler}
+              label="Repeat on weekends"
+            />
+            <Form.Check
+              name="when"
+              type="radio"
+              id="workday"
+              onChange={whenToRecurChangeHandler}
+              label="Repeat on workdays"
+            />
+          </Form.Group>
+        )}
+      </div>
       <div
         style={{
           marginTop: "2rem",
@@ -224,7 +272,7 @@ const AddEvent = () => {
       <div className="slider">
         {filteredData[0]?.event.length &&
           dataReformer(data, date).map((elem, i, arr) => {
-            return <BarElement className="taken-hours" elem={elem} i={i} arr={arr} />;
+            return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
           })}
 
         <Slider

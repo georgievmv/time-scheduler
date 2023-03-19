@@ -1,4 +1,4 @@
-import { Event, EventDate, ReformedEvent } from "../types/types";
+import { EventDate, ReformedEvent } from "../types/types";
 
 export const dataReformer = (data: EventDate[], date: string): ReformedEvent[] => {
   const filteredData = data.filter((elem) => elem.date === date);

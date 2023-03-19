@@ -83,3 +83,8 @@
 .delete-button {
   width: 100%;
 }
+.recurrence {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}

@@ -10,24 +10,20 @@ import LoadingBar from "../components/LoadingBar";
 import { toast } from "react-toastify";
 
 const LoginPage: React.FC = () => {
-  const [isSignIn, setIsSignIn] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const { loading } = useContext(Context);
   const createAccountClickHandler = () => {
-    setIsSignIn((prevState) => !prevState);
+    setIsSignUp((prevState) => !prevState);
   };
 
   const formSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSignIn) {
+    if (isSignUp) {
       try {
-        const userCredentials = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
 
         if (userCredentials) {
           await setDoc(doc(db, "users", userCredentials.user.uid), {
@@ -68,9 +64,7 @@ const LoginPage: React.FC = () => {
                 type="email"
                 placeholder="Enter your email"
               ></Form.Control>
-              <Form.Control.Feedback
-                type={errorMessage === "userNotFound" ? "invalid" : "valid"}
-              >
+              <Form.Control.Feedback type={errorMessage === "userNotFound" ? "invalid" : "valid"}>
                 User not found
               </Form.Control.Feedback>
             </Form.Group>
@@ -85,18 +79,16 @@ const LoginPage: React.FC = () => {
                 type="password"
                 placeholder="Enter your password"
               />
-              <Form.Control.Feedback
-                type={errorMessage === "password" ? "invalid" : "valid"}
-              >
+              <Form.Control.Feedback type={errorMessage === "password" ? "invalid" : "valid"}>
                 Password is invalid
               </Form.Control.Feedback>
             </Form.Group>
             <Button
-              variant={!isSignIn ? "primary" : "secondary"}
+              variant={!isSignUp ? "primary" : "secondary"}
               className="mt-3 mb-3"
               type="submit"
             >
-              {!isSignIn ? "Log in" : "Sign in"}
+              {!isSignUp ? "Log in" : "Sign in"}
             </Button>
             <p>If you dont have an account click here:</p>
             <Button onClick={createAccountClickHandler}>Create account</Button>
