@@ -84,7 +84,7 @@ const AddEvent = () => {
     setRecurrence(e.currentTarget.id as Recurrence);
   };
 
-  const whenToRecurChangeHandler = (e: React.FormEvent) => {
+  const onRecurChangeHandler = (e: React.FormEvent) => {
     setWhenToRecur(e.currentTarget.id);
   };
 
@@ -135,21 +135,15 @@ const AddEvent = () => {
     if (recurrence !== "no") {
       const lastDate = new Date(date).addDays(parseInt(recurrence));
       const dates = getDates(date, fromDateToString(lastDate));
-      const newData = dates.map((date) => {
-        return {
-          date,
-          event: [newEvent],
-        };
-      });
       setData((prevState) => {
         let newState = [...prevState];
-        newData.forEach((elem) => {
-          const existingDate = prevState.find((event) => event.date === elem.date);
+        dates.forEach((date) => {
+          const existingDate = prevState.find((event) => event.date === date);
           if (existingDate) {
             const index = prevState.indexOf(existingDate);
-            newState[index].event.push(elem.event[0]);
+            newState[index].event.push(newEvent);
           } else {
-            newState.push(elem);
+            newState.push({ date, event: [newEvent] });
           }
         });
         return newState;
@@ -232,21 +226,21 @@ const AddEvent = () => {
               name="when"
               type="radio"
               id="day"
-              onChange={whenToRecurChangeHandler}
+              onChange={onRecurChangeHandler}
               label="Repeat every day"
             />
             <Form.Check
               name="when"
               type="radio"
               id="weekend"
-              onChange={whenToRecurChangeHandler}
+              onChange={onRecurChangeHandler}
               label="Repeat on weekends"
             />
             <Form.Check
               name="when"
               type="radio"
               id="workday"
-              onChange={whenToRecurChangeHandler}
+              onChange={onRecurChangeHandler}
               label="Repeat on workdays"
             />
           </Form.Group>
