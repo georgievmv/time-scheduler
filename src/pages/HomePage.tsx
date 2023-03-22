@@ -1,4 +1,3 @@
-import React from "react";
 import Pie from "../components/Pie";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -12,7 +11,6 @@ import LoadingBar from "../components/LoadingBar";
 import pieChartIcon from "../assets/pie-chart-fill.svg";
 import { toast } from "react-toastify";
 import DateInput from "../components/DateInput";
-import { dataReformer } from "../utils/reformDataForBar";
 
 const HomePage = () => {
   const { date, data, setIsLoading, onLogout, setData, setAdding, loading } = useContext(Context);
@@ -56,7 +54,7 @@ const HomePage = () => {
 
           {isPieChart && !!filteredData.length && <Pie />}
           <Bar />
-          {!filteredData[0]?.event?.length ? (
+          {!filteredData[0]?.event.length ? (
             <p style={{ textAlign: "center" }}>You haven`t added any events for this day yet</p>
           ) : (
             <EventList />

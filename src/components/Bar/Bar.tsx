@@ -14,8 +14,9 @@ const Bar = () => {
         dataReformer(data, date).map((elem, i, arr) => {
           return (
             <BarElement
+              key={i}
               className={
-                elem.recurrence
+                elem.recurrence !== "no"
                   ? "progress-bar bg-secondary bar-element"
                   : "progress-bar bg-success bar-element"
               }

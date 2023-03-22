@@ -3,20 +3,7 @@ import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
 import { dataReformer } from "../utils/reformDataForBar";
 
-export type Event = {
-  start: number;
-  end: number;
-  recurrence: "30" | "60" | "90" | "";
-  id: string;
-  color: string;
-  value: number;
-  title: string;
-};
 
-export type EventDate = {
-  date: string;
-  event: Event[];
-};
 
 const Pie = () => {
   const { date, data } = useContext(Context);

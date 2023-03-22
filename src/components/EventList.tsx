@@ -93,7 +93,7 @@ const EventList: React.FC = () => {
             key={elem.id}
             style={{ cursor: "pointer" }}
             className="m-3"
-            border={elem.recurrence ? "secondary" : "success"}
+            border={elem.recurrence !== "no" ? "secondary" : "success"}
           >
             <Card.Body>
               <Card.Title>{elem.title}</Card.Title>
