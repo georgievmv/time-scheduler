@@ -11,9 +11,11 @@ import { randomTimeGenerator } from "../utils/timeTransformer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
-import { Event, Recurrence } from "../types/types";
+import { Event, Recurrence, EventDate } from "../types/types";
 import { fromDateToString } from "../utils/fromDateToString";
 import BarElement from "./Bar/BarElement";
+import { recurrenceOvelapCheck } from "../utils/recurrenceOverlapCheck";
+import WarningModal from "./WarningModal";
 
 //Setting up addDays method to Date object
 declare global {
@@ -30,6 +32,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
+  const [isRecurrenceOverlaping, setIsRecurreneOverlaping] = useState(false);
   const [recurrence, setRecurrence] = useState<Recurrence>("no");
   const [whenToRecur, setWhenToRecur] = useState("day");
   const [isInitial, setIsInitial] = useState(false);
@@ -38,20 +41,15 @@ const AddEvent = () => {
   const [eventTitle, setEventTitle] = useState("");
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
-  const { date, data, setAdding, setData } = useContext(Context);
-  const filteredData = data.filter((elem) => elem.date === date);
+  const { selectedDate, data, setAdding, setData } = useContext(Context);
+  const filteredData = data.filter((elem) => elem.date === selectedDate);
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
     filteredData[0]?.event?.forEach((elem) => {
-      if (
-        (value[0] < elem.start && value[1] > elem.start) ||
-        (value[0] >= elem.start && value[0] < elem.end) ||
-        (value[1] < elem.end && value[1] > elem.start)
-      ) {
+      if (value[0] < elem.end && elem.start < value[1]) {
         setIsEventAlreadyPlaned(true);
       }
     });
-    console.log(value[0]);
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
@@ -61,20 +59,7 @@ const AddEvent = () => {
       setStartTime(randomTime[0]);
       setEndTime(randomTime[1]);
     }
-  }, [date]);
-
-  useEffect(() => {
-    const sendData = async () => {
-      await firestore("updateDoc", { data: data });
-      if (!isInitial) {
-        setIsInitial(true);
-        return;
-      } else {
-        setAdding(false);
-      }
-    };
-    sendData();
-  }, [data]);
+  }, [selectedDate]);
 
   const onCancelAdding = () => {
     setAdding(false);
@@ -133,45 +118,60 @@ const AddEvent = () => {
     };
 
     if (recurrence !== "no") {
-      const lastDate = new Date(date).addDays(parseInt(recurrence));
-      const dates = getDates(date, fromDateToString(lastDate));
-      setData((prevState) => {
-        let newState = [...prevState];
-        dates.forEach((date) => {
-          const existingDate = prevState.find((event) => event.date === date);
-          if (existingDate) {
-            const index = prevState.indexOf(existingDate);
-            newState[index].event.push(newEvent);
-          } else {
-            newState.push({ date, event: [newEvent] });
-          }
-        });
-        return newState;
+      const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
+      const dates = getDates(selectedDate, fromDateToString(lastDate));
+      let newState = [...data];
+      dates.forEach((date) => {
+        const existingDate = data.find((event) => event.date === date);
+        if (existingDate) {
+          const index = (data as EventDate[]).indexOf(existingDate);
+          newState[index].event.push(newEvent);
+        } else {
+          newState.push({ date, event: [newEvent] });
+        }
       });
+      setData(newState);
       toast.success("You've successfully added a new event", {
         position: toast.POSITION.TOP_CENTER,
       });
     } else {
-      setData((prevState) => {
-        if (prevState.find((elem) => elem.date === date)) {
-          let newState = [...prevState];
-          const selectedDay = prevState.filter((elem) => elem.date === date);
-          const indexToSplice = prevState.indexOf(selectedDay[0]);
-          selectedDay[0].event.push(newEvent);
-          const newDay = { date, event: selectedDay[0].event };
-          newState.splice(indexToSplice, 1, newDay);
-          return newState;
-        }
-        return [...prevState, { date, event: [newEvent] }];
-      });
+      const selectedDay = data.filter((elem) => elem.date === selectedDate);
+      let newState = [...data];
+      if (selectedDay) {
+        const indexToSplice = (data as EventDate[]).indexOf(selectedDay[0]);
+        selectedDay[0].event.push(newEvent);
+        const newDay = { date: selectedDate, event: selectedDay[0].event };
+        newState.splice(indexToSplice, 1, newDay);
+      }
+      newState = [...data, { date: selectedDate, event: [newEvent] }];
+      setData(newState);
       toast.success("You've successfully added a new event", {
         position: toast.POSITION.TOP_CENTER,
       });
     }
   };
+  useEffect(() => {
+    const sendData = async () => {
+      await firestore("updateDoc", { data: data });
+      if (!isInitial) {
+        setIsInitial(true);
+        return;
+      } else {
+        setAdding(false);
+      }
+    };
+    sendData();
+  }, [data]);
 
   return (
     <Form onSubmit={formSubmitHandler} className="home-page-container my-4">
+      {/*   <WarningModal
+      show={isRecurrenceOverlaping}
+      title="You have an event in the future in the same timespan"
+      message="Do you want to replace the future event with this one"
+      onConfirm={}
+      onDecline={}
+      /> */}
       <Form.Group className="my-3">
         <Form.Label>Event title</Form.Label>
         <Form.Control
@@ -265,7 +265,7 @@ const AddEvent = () => {
       </div>
       <div className="slider">
         {filteredData[0]?.event.length &&
-          dataReformer(data, date).map((elem, i, arr) => {
+          dataReformer(data, selectedDate).map((elem, i, arr) => {
             return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
           })}
 

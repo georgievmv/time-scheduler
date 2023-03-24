@@ -13,10 +13,11 @@ import { toast } from "react-toastify";
 import DateInput from "../components/DateInput";
 
 const HomePage = () => {
-  const { date, data, setIsLoading, onLogout, setData, setAdding, loading } = useContext(Context);
+  const { selectedDate, data, setIsLoading, onLogout, setData, setAdding, loading } =
+    useContext(Context);
   const firestore = useFireStore();
   const [isPieChart, setIsPieChart] = useState(false);
-  const filteredData = data.filter((elem) => elem.date === date);
+  const filteredData = data.filter((elem) => elem.date === selectedDate);
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true);

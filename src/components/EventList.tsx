@@ -15,7 +15,7 @@ const EventList: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
-  const { date, data, setData } = useContext(Context);
+  const { selectedDate, data, setData } = useContext(Context);
   const toggleEventModalShow = () => setIsShowModal(!isShowModal);
   const toggleAllEventModalShow = () => setIsShowAllEventModal(!isShowAllEventModal);
 
@@ -55,7 +55,7 @@ const EventList: React.FC = () => {
     toggleEventModalShow();
   };
   const onConfirmDeleteEventHandler = () => {
-    const filteredData = data.filter((elem) => elem.date === date);
+    const filteredData = data.filter((elem) => elem.date === selectedDate);
     const newData = [...data];
     const index = newData.indexOf(filteredData[0]);
     newData[index].event = filteredData[0].event.filter((elem) => elem.id !== selectedId);
@@ -85,7 +85,7 @@ const EventList: React.FC = () => {
         onDecline={onDeclineDeleteAllEventHandler}
         onConfirm={onConfirmDeleteAllEventHandler}
       />
-      {dataReformer(data, date)?.map((elem) => {
+      {dataReformer(data, selectedDate)?.map((elem) => {
         return (
           <Card
             id={elem.id}
