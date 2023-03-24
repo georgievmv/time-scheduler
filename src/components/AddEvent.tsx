@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DateInput from "./DateInput";
 import { Event, Recurrence, EventDate } from "../types/types";
-import { fromDateToString } from "../utils/fromDateToString";
+import { createDatesArray, fromDateToString } from "../utils/fromDateToString";
 import BarElement from "./Bar/BarElement";
 import { recurrenceOvelapCheck } from "../utils/recurrenceOverlapCheck";
 import WarningModal from "./WarningModal";
@@ -75,80 +75,38 @@ const AddEvent = () => {
 
   const formSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    const randomId = Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
 
-    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-    const value = (endTime - startTime) / 60;
     const newEvent: Event = {
-      id: randomId,
+      id: Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1),
       title: eventTitle,
-      value: value,
-      color: randomColor,
+      value: (endTime - startTime) / 60,
+      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
       start: startTime,
       end: endTime,
       recurrence,
     };
 
-    const getDates = (startDate: string, stopDate: string) => {
-      const dateArray = [];
-      let currentDate = new Date(startDate);
-      while (currentDate <= new Date(stopDate)) {
-        switch (whenToRecur) {
-          case "day":
-            dateArray.push(fromDateToString(currentDate));
-            currentDate = currentDate.addDays(1);
-            break;
-          case "workday":
-            if (currentDate.getDay() > 0 && currentDate.getDay() < 6) {
-              dateArray.push(fromDateToString(currentDate));
-            }
-            currentDate = currentDate.addDays(1);
-            break;
-          case "weekend":
-            if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
-              dateArray.push(fromDateToString(currentDate));
-            }
-            currentDate = currentDate.addDays(1);
-            break;
-        }
-      }
-      return dateArray;
-    };
-
+    let dates = [selectedDate];
     if (recurrence !== "no") {
       const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
-      const dates = getDates(selectedDate, fromDateToString(lastDate));
-      let newState = [...data];
-      dates.forEach((date) => {
-        const existingDate = data.find((event) => event.date === date);
-        if (existingDate) {
-          const index = (data as EventDate[]).indexOf(existingDate);
-          newState[index].event.push(newEvent);
-        } else {
-          newState.push({ date, event: [newEvent] });
-        }
-      });
-      setData(newState);
-      toast.success("You've successfully added a new event", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    } else {
-      const selectedDay = data.filter((elem) => elem.date === selectedDate);
-      let newState = [...data];
-      if (selectedDay) {
-        const indexToSplice = (data as EventDate[]).indexOf(selectedDay[0]);
-        selectedDay[0].event.push(newEvent);
-        const newDay = { date: selectedDate, event: selectedDay[0].event };
-        newState.splice(indexToSplice, 1, newDay);
-      }
-      newState = [...data, { date: selectedDate, event: [newEvent] }];
-      setData(newState);
-      toast.success("You've successfully added a new event", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      dates = createDatesArray(selectedDate, lastDate, whenToRecur);
     }
+    let newState = [...data];
+    dates.forEach((date) => {
+      const existingDate = data.find((event) => event.date === date);
+      if (existingDate) {
+        const index = (data as EventDate[]).indexOf(existingDate);
+        newState[index].event.push(newEvent);
+      } else {
+        newState.push({ date, event: [newEvent] });
+      }
+    });
+    setData(newState);
+    toast.success("You've successfully added a new event", {
+      position: toast.POSITION.TOP_CENTER,
+    });
   };
   useEffect(() => {
     const sendData = async () => {
