@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Modal, Button } from "react-bootstrap";
 
 const WarningModal: React.FC<{
@@ -13,9 +12,7 @@ const WarningModal: React.FC<{
 
   return (
     <Modal onHide={onDecline} className="p-2" show={show}>
-      <Modal.Title className="p-4">
-        {!title ? "Modal title" : title}
-      </Modal.Title>
+      <Modal.Title className="p-4">{!title ? "Modal title" : title}</Modal.Title>
       <Modal.Body>{!message ? "Modal message" : message}</Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={onConfirm}>

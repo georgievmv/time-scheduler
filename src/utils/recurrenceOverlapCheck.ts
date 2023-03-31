@@ -1,11 +1,18 @@
-import { Event } from "../types/types";
+import { EventDate, Event } from "../types/types";
 
-export const recurrenceOvelapCheck = (prevEventArray: Event[], newEvent: Event) => {
-  for (let i = 0; i < prevEventArray.length; i++) {
-    if (prevEventArray[i].start < newEvent.end && newEvent.start < prevEventArray[i].end) {
-      return true;
-    } else {
-      return false;
+export const recurrenceOverlapCheck = (dates: string[], data: EventDate[], newEvent: Event) => {
+  let result = false;
+
+  for (let i in dates) {
+    const foundEvent = data.find((event) => event?.date === dates[i]);
+    if (foundEvent) {
+      for (let i = 0; i < foundEvent.event.length; i++) {
+        if (foundEvent.event[i].start < newEvent.end && newEvent.start < foundEvent.event[i].end) {
+          result = true;
+          break;
+        }
+      }
     }
   }
+  return result;
 };

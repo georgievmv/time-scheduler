@@ -32,7 +32,7 @@ const EventList: React.FC = () => {
     await firestore("updateDoc", { data: arg });
   };
 
-  //Deleting All event
+  // deleting all event occurences
   const deleteAllEventHandler = () => {
     toggleAllEventModalShow();
   };
@@ -48,9 +48,9 @@ const EventList: React.FC = () => {
   const onDeclineDeleteAllEventHandler = () => {
     toggleAllEventModalShow();
   };
-  ////////
+  // end of deleting all event occurences
 
-  ////Deleting Event
+  // deleting Event
   const deleteEventHandler = () => {
     toggleEventModalShow();
   };
@@ -64,7 +64,7 @@ const EventList: React.FC = () => {
     toast.warning("You've deleted an event");
     toggleEventModalShow();
   };
-  ////////////////
+  // end of deleting event
   const onDeclineDeleteEventHandler = () => {
     toggleEventModalShow();
   };
@@ -112,7 +112,7 @@ const EventList: React.FC = () => {
                 >
                   Delete
                 </Button>
-                {elem.recurrence && (
+                {elem.recurrence !== "no" && (
                   <Button
                     id="delete-instance"
                     className="delete-button"

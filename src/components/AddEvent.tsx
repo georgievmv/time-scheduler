@@ -14,7 +14,7 @@ import DateInput from "./DateInput";
 import { Event, Recurrence, EventDate } from "../types/types";
 import { createDatesArray, fromDateToString } from "../utils/fromDateToString";
 import BarElement from "./Bar/BarElement";
-import { recurrenceOvelapCheck } from "../utils/recurrenceOverlapCheck";
+import { recurrenceOverlapCheck } from "../utils/recurrenceOverlapCheck";
 import WarningModal from "./WarningModal";
 
 //Setting up addDays method to Date object
@@ -32,7 +32,7 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
-  const [isRecurrenceOverlaping, setIsRecurreneOverlaping] = useState(false);
+  const [overlappingRecurring, setOverlappingRecurring] = useState<boolean>(false);
   const [recurrence, setRecurrence] = useState<Recurrence>("no");
   const [whenToRecur, setWhenToRecur] = useState("day");
   const [isInitial, setIsInitial] = useState(false);
@@ -43,8 +43,10 @@ const AddEvent = () => {
   const firestore = useFireStore();
   const { selectedDate, data, setAdding, setData } = useContext(Context);
   const filteredData = data.filter((elem) => elem.date === selectedDate);
+
   const sliderChangeHandler = (value: any) => {
     setIsEventAlreadyPlaned(false);
+    //checking if slider is in position that is already taken
     filteredData[0]?.event?.forEach((elem) => {
       if (value[0] < elem.end && elem.start < value[1]) {
         setIsEventAlreadyPlaned(true);
@@ -53,6 +55,12 @@ const AddEvent = () => {
     setStartTime(value[0]);
     setEndTime(value[1]);
   };
+
+  const toggleModal = () => {
+    setOverlappingRecurring((prevState) => !prevState);
+  };
+
+  // on date change create 'random' time for the initial position of slider thumbs
   useEffect(() => {
     if (!!filteredData[0]?.event?.length) {
       const randomTime = randomTimeGenerator(filteredData[0].event);
@@ -73,30 +81,31 @@ const AddEvent = () => {
     setWhenToRecur(e.currentTarget.id);
   };
 
-  const formSubmitHandler = (e: React.FormEvent) => {
-    e.preventDefault();
+  const newEvent: Event = {
+    id: Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1),
+    title: eventTitle,
+    value: (endTime - startTime) / 60,
+    color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    start: startTime,
+    end: endTime,
+    recurrence,
+  };
 
-    const newEvent: Event = {
-      id: Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1),
-      title: eventTitle,
-      value: (endTime - startTime) / 60,
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-      start: startTime,
-      end: endTime,
-      recurrence,
-    };
-
-    let dates = [selectedDate];
-    if (recurrence !== "no") {
-      const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
-      dates = createDatesArray(selectedDate, lastDate, whenToRecur);
-    }
+  //confirmation handler for overlapping events
+  const confirmReplaceHandler = () => {
+    const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
+    const dates = createDatesArray(selectedDate, lastDate, whenToRecur);
     let newState = [...data];
     dates.forEach((date) => {
       const existingDate = data.find((event) => event.date === date);
       if (existingDate) {
+        existingDate.event.forEach((elem, i) => {
+          if (elem.start < newEvent.end && newEvent.start < elem.end) {
+            existingDate.event.splice(i, 1);
+          }
+        });
         const index = (data as EventDate[]).indexOf(existingDate);
         newState[index].event.push(newEvent);
       } else {
@@ -108,6 +117,45 @@ const AddEvent = () => {
       position: toast.POSITION.TOP_CENTER,
     });
   };
+
+  //decline handler for overlapping events
+  const declineReplaceHandler = () => {
+    toggleModal();
+  };
+
+  const formSubmitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let dates = [selectedDate];
+    //checking if task is going to repeat
+    if (recurrence !== "no") {
+      const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
+      dates = createDatesArray(selectedDate, lastDate, whenToRecur);
+    }
+
+    //checking for future tasks overlapping with current one
+    if (recurrenceOverlapCheck(dates, data, newEvent)) {
+      toggleModal();
+      return;
+    }
+
+    //if no task is overlapping proceed with upating the state
+    let newState = [...data];
+    for (let i in dates) {
+      const existingDate = data.find((event) => event.date === dates[i]);
+      if (existingDate) {
+        const index = (data as EventDate[]).indexOf(existingDate);
+        newState[index].event.push(newEvent);
+      } else {
+        newState.push({ date: dates[i], event: [newEvent] });
+      }
+    }
+    setData(newState);
+    toast.success("You've successfully added a new event", {
+      position: toast.POSITION.TOP_CENTER,
+    });
+  };
+
+  //sending data ot state data state change
   useEffect(() => {
     const sendData = async () => {
       await firestore("updateDoc", { data: data });
@@ -123,13 +171,13 @@ const AddEvent = () => {
 
   return (
     <Form onSubmit={formSubmitHandler} className="home-page-container my-4">
-      {/*   <WarningModal
-      show={isRecurrenceOverlaping}
-      title="You have an event in the future in the same timespan"
-      message="Do you want to replace the future event with this one"
-      onConfirm={}
-      onDecline={}
-      /> */}
+      <WarningModal
+        show={overlappingRecurring}
+        title="You have an event in the future in the same timespan"
+        message="Do you want to replace the future event with this one"
+        onConfirm={confirmReplaceHandler}
+        onDecline={declineReplaceHandler}
+      />
       <Form.Group className="my-3">
         <Form.Label>Event title</Form.Label>
         <Form.Control
