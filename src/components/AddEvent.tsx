@@ -1,21 +1,22 @@
-import React from "react";
-import { Form, Button } from "react-bootstrap";
-import { useState, useContext, useEffect } from "react";
-import { Context } from "../store/app-context";
-import useFireStore from "../hooks/useFireStore";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
-import { timeTransformer } from "../utils/timeTransformer";
-import { dataReformer } from "../utils/reformDataForBar";
-import { randomTimeGenerator } from "../utils/timeTransformer";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import DateInput from "./DateInput";
-import { Event, Recurrence, EventDate } from "../types/types";
-import { createDatesArray, fromDateToString } from "../utils/fromDateToString";
-import BarElement from "./Bar/BarElement";
-import { recurrenceOverlapCheck } from "../utils/recurrenceOverlapCheck";
-import WarningModal from "./WarningModal";
+import React from 'react';
+import { Form, Button } from 'react-bootstrap';
+import { useState, useContext, useEffect } from 'react';
+import { Context } from '../store/app-context';
+import useFireStore from '../hooks/useFireStore';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import { timeTransformer } from '../utils/timeTransformer';
+import { dataReformer } from '../utils/reformDataForBar';
+import { randomTimeGenerator } from '../utils/timeTransformer';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DateInput from './DateInput';
+import { Event, Recurrence, EventDate } from '../types/types';
+import { createDatesArray, fromDateToString } from '../utils/fromDateToString';
+import BarElement from './Bar/BarElement';
+import { checkIsReccurenceOverlapped } from '../utils/checkIsReccurenceOverlapped';
+import WarningModal from './WarningModal';
+import generateRandomId from '../utils/generateRandomId';
 
 //Setting up addDays method to Date object
 declare global {
@@ -32,13 +33,13 @@ Date.prototype.addDays = function (days: number) {
 ///////////
 
 const AddEvent = () => {
-  const [overlappingRecurring, setOverlappingRecurring] = useState<boolean>(false);
-  const [recurrence, setRecurrence] = useState<Recurrence>("no");
-  const [whenToRecur, setWhenToRecur] = useState("day");
+  const [isRecurringOverlapping, setIsRecurringOverlapping] = useState<boolean>(false);
+  const [recurrence, setRecurrence] = useState<Recurrence>('no');
+  const [whenToRecur, setWhenToRecur] = useState('day');
   const [isInitial, setIsInitial] = useState(false);
   const [startTime, setStartTime] = useState(720);
   const [endTime, setEndTime] = useState(810);
-  const [eventTitle, setEventTitle] = useState("");
+  const [eventTitle, setEventTitle] = useState('');
   const [IsEventAlreadyPlaned, setIsEventAlreadyPlaned] = useState(false);
   const firestore = useFireStore();
   const { selectedDate, data, setAdding, setData } = useContext(Context);
@@ -57,7 +58,7 @@ const AddEvent = () => {
   };
 
   const toggleModal = () => {
-    setOverlappingRecurring((prevState) => !prevState);
+    setIsRecurringOverlapping((prevState) => !prevState);
   };
 
   // on date change create 'random' time for the initial position of slider thumbs
@@ -82,9 +83,7 @@ const AddEvent = () => {
   };
 
   const newEvent: Event = {
-    id: Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1),
+    id: generateRandomId(),
     title: eventTitle,
     value: (endTime - startTime) / 60,
     color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
@@ -127,13 +126,13 @@ const AddEvent = () => {
     e.preventDefault();
     let dates = [selectedDate];
     //checking if task is going to repeat
-    if (recurrence !== "no") {
+    if (recurrence !== 'no') {
       const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
       dates = createDatesArray(selectedDate, lastDate, whenToRecur);
     }
 
     //checking for future tasks overlapping with current one
-    if (recurrenceOverlapCheck(dates, data, newEvent)) {
+    if (checkIsReccurenceOverlapped(dates, data, newEvent)) {
       toggleModal();
       return;
     }
@@ -158,7 +157,7 @@ const AddEvent = () => {
   //sending data ot state data state change
   useEffect(() => {
     const sendData = async () => {
-      await firestore("updateDoc", { data: data });
+      await firestore('updateDoc', { data: data });
       if (!isInitial) {
         setIsInitial(true);
         return;
@@ -172,7 +171,7 @@ const AddEvent = () => {
   return (
     <Form onSubmit={formSubmitHandler} className="home-page-container my-4">
       <WarningModal
-        show={overlappingRecurring}
+        show={isRecurringOverlapping}
         title="You have an event in the future in the same timespan"
         message="Do you want to replace the future event with this one"
         onConfirm={confirmReplaceHandler}
@@ -225,7 +224,7 @@ const AddEvent = () => {
             label="Repeat for 90 days"
           />
         </Form.Group>
-        {recurrence !== "no" && (
+        {recurrence !== 'no' && (
           <Form.Group>
             <Form.Check
               defaultChecked
@@ -254,9 +253,9 @@ const AddEvent = () => {
       </div>
       <div
         style={{
-          marginTop: "2rem",
-          display: "flex",
-          justifyContent: "space-between",
+          marginTop: '2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
         }}
       >
         <Form.Group>
@@ -278,31 +277,31 @@ const AddEvent = () => {
         <Slider
           onChange={sliderChangeHandler}
           railStyle={{
-            background: "#30115e",
-            height: "7px",
+            background: '#30115e',
+            height: '7px',
           }}
           handleStyle={[
             {
-              zIndex: "3",
-              cursor: "pointer",
-              border: "none",
-              backgroundColor: "#ea39b8",
-              opacity: "1",
-              height: "16px",
-              width: "16px",
+              zIndex: '3',
+              cursor: 'pointer',
+              border: 'none',
+              backgroundColor: '#ea39b8',
+              opacity: '1',
+              height: '16px',
+              width: '16px',
             },
             {
-              zIndex: "3",
+              zIndex: '3',
 
-              cursor: "ponter",
-              border: "none",
-              backgroundColor: "#ea39b8",
-              opacity: "1",
-              height: "16px",
-              width: "16px",
+              cursor: 'ponter',
+              border: 'none',
+              backgroundColor: '#ea39b8',
+              opacity: '1',
+              height: '16px',
+              width: '16px',
             },
           ]}
-          trackStyle={[{ height: "7px", backgroundColor: "transparent" }]}
+          trackStyle={[{ height: '7px', backgroundColor: 'transparent' }]}
           range
           allowCross={false}
           defaultValue={[startTime, endTime]}
@@ -314,9 +313,9 @@ const AddEvent = () => {
       </div>
 
       {IsEventAlreadyPlaned && (
-        <p style={{ position: "absolute" }}>You have an event planed in this timespan</p>
+        <p style={{ position: 'absolute' }}>You have an event planed in this timespan</p>
       )}
-      <div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: 'center' }}>
         <Button
           className="mt-5"
           disabled={endTime <= startTime || !eventTitle || IsEventAlreadyPlaned}
