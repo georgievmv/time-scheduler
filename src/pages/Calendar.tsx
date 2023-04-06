@@ -5,7 +5,7 @@ import generateRandomId from '../utils/generateRandomId';
 const Calendar = () => {
   const [month, setMonth] = useState(new Date().getMonth());
   const [year, setYear] = useState(new Date().getFullYear());
-  const numberdaysInMonth = new Date(year, month, 0).getDate();
+  const numberdaysInMonth = new Date(year, month + 1, 0).getDate();
   const emptyDaysToAddToAlignCalendar = new Date(year, month, 1).getDay() - 1;
   let emptySpace = [];
   const monthNames = [
