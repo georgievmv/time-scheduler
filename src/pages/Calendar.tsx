@@ -3,10 +3,9 @@ import { Card } from 'react-bootstrap';
 import { useState } from 'react';
 import generateRandomId from '../utils/generateRandomId';
 const Calendar = () => {
-  const [month, setMonth] = useState(new Date().getMonth());
-  const [year, setYear] = useState(new Date().getFullYear());
-  const numberdaysInMonth = new Date(year, month + 1, 0).getDate();
-  const emptyDaysToAddToAlignCalendar = new Date(year, month, 1).getDay() - 1;
+  const [date, setDate] = useState(new Date());
+  const numberDaysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const emptyDaysToAddToAlignCalendar = date.getDay() - 1;
   let emptySpace = [];
   const monthNames = [
     'January',
@@ -28,37 +27,24 @@ const Calendar = () => {
   }
   let days: (string | number)[] = [...emptySpace];
 
-  for (let i = 1; i <= numberdaysInMonth; i++) {
+  for (let i = 1; i <= numberDaysInMonth; i++) {
     days.push(i);
   }
+  console.log(days);
 
   const monthPlusChangeHandler = () => {
-    if (month === 11) {
-      setYear((prevYear) => {
-        setMonth(new Date(prevYear + 1, 0, 1).getMonth()); // setting month if new year
-        return new Date(prevYear + 1, 0, 1).getFullYear();
-      });
-    } else {
-      setMonth((prevMonth) => {
-        return new Date(year, prevMonth + 1, 1).getMonth();
-      });
-    }
+    setDate((prevState) => {
+      return new Date(prevState.getFullYear(), prevState.getMonth() + 1, 1);
+    });
   };
   const monthMinusChangeHandler = () => {
-    if (month === 0) {
-      setYear((prevYear) => {
-        setMonth(new Date(prevYear - 1, 11, 1).getMonth()); // setting month if new year
-        return new Date(prevYear - 1, 11, 1).getFullYear();
-      });
-    } else {
-      setMonth((prevMonth) => {
-        return new Date(year, prevMonth - 1, 1).getMonth();
-      });
-    }
+    setDate((prevState) => {
+      return new Date(prevState.getFullYear(), prevState.getMonth() - 1, 1);
+    });
   };
   return (
     <div className="calendar-container">
-      <h1>{monthNames[month] + ' ' + year}</h1>
+      <h1>{monthNames[date.getMonth()] + ' ' + date.getFullYear()}</h1>
       <button onClick={monthMinusChangeHandler}>left</button>
       <button onClick={monthPlusChangeHandler}>right</button>
       <div className="daysOfTheWeek">
