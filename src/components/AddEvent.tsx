@@ -96,7 +96,7 @@ const AddEvent = () => {
   const confirmReplaceHandler = () => {
     const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
     const dates = createDatesArray(selectedDate, lastDate, whenToRecur);
-    let newState = [...data];
+    const newState = [...data];
     dates.forEach((date) => {
       const existingDate = data.find((event) => event.date === date);
       if (existingDate) {
@@ -130,6 +130,11 @@ const AddEvent = () => {
       const lastDate = new Date(selectedDate).addDays(parseInt(recurrence));
       dates = createDatesArray(selectedDate, lastDate, whenToRecur);
     }
+
+    console.time('checkIsReccurenceOverlapped');
+    const result1 = checkIsReccurenceOverlapped(dates, data, newEvent);
+    console.timeEnd('checkIsReccurenceOverlapped');
+    console.log('Result 1:', result1);
 
     //checking for future tasks overlapping with current one
     if (checkIsReccurenceOverlapped(dates, data, newEvent)) {
