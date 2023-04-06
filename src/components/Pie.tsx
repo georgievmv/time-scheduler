@@ -3,21 +3,19 @@ import { useContext, useState } from "react";
 import { Context } from "../store/app-context";
 import { dataReformer } from "../utils/reformDataForBar";
 
-
-
 const Pie = () => {
-  const { date, data } = useContext(Context);
+  const { selectedDate, data } = useContext(Context);
   const [isShowingPercentage, setIsShowingPercentage] = useState(false);
 
   const onClickHandler = () => {
     setIsShowingPercentage((prevState) => !prevState);
   };
 
-  const valuesArr = dataReformer(data, date).map((elem) => elem.value);
+  const valuesArr = dataReformer(data, selectedDate).map((elem) => elem.value);
 
   const sumOfValues = valuesArr.reduce((a, b) => a + b);
   const percentageConversionRatio = 100 / sumOfValues;
-  const reformedDataForPie = dataReformer(data, date).map((elem) => {
+  const reformedDataForPie = dataReformer(data, selectedDate).map((elem) => {
     return { ...elem, value: elem.value * percentageConversionRatio };
   });
   return (

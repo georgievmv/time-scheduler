@@ -9,3 +9,29 @@ export const fromDateToString = (arg: Date) => {
       : new Date(arg).getDate()
   }`;
 };
+
+export const createDatesArray = (startDate: string, stopDate: Date, whenToRecur: string) => {
+  const dateArray = [];
+  let currentDate = new Date(startDate);
+  while (currentDate <= stopDate) {
+    switch (whenToRecur) {
+      case "day":
+        dateArray.push(fromDateToString(currentDate));
+        currentDate = currentDate.addDays(1);
+        break;
+      case "workday":
+        if (currentDate.getDay() > 0 && currentDate.getDay() < 6) {
+          dateArray.push(fromDateToString(currentDate));
+        }
+        currentDate = currentDate.addDays(1);
+        break;
+      case "weekend":
+        if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+          dateArray.push(fromDateToString(currentDate));
+        }
+        currentDate = currentDate.addDays(1);
+        break;
+    }
+  }
+  return dateArray;
+};

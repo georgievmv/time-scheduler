@@ -6,12 +6,12 @@ import { dataReformer } from "../../utils/reformDataForBar";
 import BarElement from "./BarElement";
 
 const Bar = () => {
-  const { data, date } = useContext(Context);
-  const filteredData = data.filter((elem) => elem.date === date);
+  const { data, selectedDate } = useContext(Context);
+  const filteredData = data.filter((elem) => elem.date === selectedDate);
   return (
     <div className="bar-container">
       {filteredData[0]?.event?.length > 0 &&
-        dataReformer(data, date).map((elem, i, arr) => {
+        dataReformer(data, selectedDate).map((elem, i, arr) => {
           return (
             <BarElement
               key={i}

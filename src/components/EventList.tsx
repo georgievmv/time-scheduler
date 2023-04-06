@@ -15,7 +15,7 @@ const EventList: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const firestore = useFireStore();
-  const { date, data, setData } = useContext(Context);
+  const { selectedDate, data, setData } = useContext(Context);
   const toggleEventModalShow = () => setIsShowModal(!isShowModal);
   const toggleAllEventModalShow = () => setIsShowAllEventModal(!isShowAllEventModal);
 
@@ -32,7 +32,7 @@ const EventList: React.FC = () => {
     await firestore("updateDoc", { data: arg });
   };
 
-  //Deleting All event
+  // deleting all event occurences
   const deleteAllEventHandler = () => {
     toggleAllEventModalShow();
   };
@@ -48,14 +48,14 @@ const EventList: React.FC = () => {
   const onDeclineDeleteAllEventHandler = () => {
     toggleAllEventModalShow();
   };
-  ////////
+  // end of deleting all event occurences
 
-  ////Deleting Event
+  // deleting Event
   const deleteEventHandler = () => {
     toggleEventModalShow();
   };
   const onConfirmDeleteEventHandler = () => {
-    const filteredData = data.filter((elem) => elem.date === date);
+    const filteredData = data.filter((elem) => elem.date === selectedDate);
     const newData = [...data];
     const index = newData.indexOf(filteredData[0]);
     newData[index].event = filteredData[0].event.filter((elem) => elem.id !== selectedId);
@@ -64,7 +64,7 @@ const EventList: React.FC = () => {
     toast.warning("You've deleted an event");
     toggleEventModalShow();
   };
-  ////////////////
+  // end of deleting event
   const onDeclineDeleteEventHandler = () => {
     toggleEventModalShow();
   };
@@ -85,7 +85,7 @@ const EventList: React.FC = () => {
         onDecline={onDeclineDeleteAllEventHandler}
         onConfirm={onConfirmDeleteAllEventHandler}
       />
-      {dataReformer(data, date)?.map((elem) => {
+      {dataReformer(data, selectedDate)?.map((elem) => {
         return (
           <Card
             id={elem.id}
@@ -112,7 +112,7 @@ const EventList: React.FC = () => {
                 >
                   Delete
                 </Button>
-                {elem.recurrence && (
+                {elem.recurrence !== "no" && (
                   <Button
                     id="delete-instance"
                     className="delete-button"

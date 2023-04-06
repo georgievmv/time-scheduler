@@ -3,7 +3,7 @@ import { useState } from "react";
 import { EventDate } from "../types/types";
 type ContextObj = {
   setDate: (arg: string) => void;
-  date: string;
+  selectedDate: string;
   loading: boolean;
   setIsLoading: (arg: boolean) => void;
   adding: boolean;
@@ -18,7 +18,7 @@ type ContextObj = {
 
 export const Context = React.createContext<ContextObj>({
   setDate: (arg: string) => {},
-  date: "",
+  selectedDate: "",
   loading: false,
   setIsLoading: (arg: boolean) => {},
   adding: false,
@@ -45,7 +45,7 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
     new Date().getDate().toString().length === 1 ? "0" + new Date().getDate() : new Date().getDate()
   }`;
   //TODO:move up with other states
-  const [date, setDate] = useState(today);
+  const [selectedDate, setDate] = useState(today);
   const onLogin = (arg: string) => {
     setIsLoggedIn(true);
     setUid(arg);
@@ -57,7 +57,7 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
 
   const contextValue = {
     setDate,
-    date,
+    selectedDate,
     loading,
     setIsLoading,
     adding,
