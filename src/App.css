@@ -88,3 +88,23 @@
   display: flex;
   justify-content: space-between;
 }
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  height: fit-content;
+}
+
+.calendar-container {
+  max-width: 500px;
+
+  margin-top: 0px;
+  width: 90%;
+}
+
+.daysOfTheWeek {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+}
