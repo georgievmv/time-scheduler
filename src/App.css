@@ -97,14 +97,93 @@
 }
 
 .calendar-container {
+  position: absolute;
   max-width: 500px;
 
   margin-top: 0px;
   width: 90%;
 }
-
+.calendar-heading {
+  text-align: center;
+}
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
 .daysOfTheWeek {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   width: 100%;
+}
+
+.expandCalendar {
+  z-index: 0;
+  animation: expandCalendar 2s forwards ease !important ;
+  transition: ease-in;
+}
+
+.invisible {
+  visibility: hidden !important;
+}
+
+.home-container {
+  scale: 0.001;
+}
+
+.expandHome {
+  animation: expandHome 0.5s forwards !important;
+}
+.home-already-expanded {
+  scale: 1;
+}
+
+.shrinkHome {
+  animation: shrinkHome 0.5s forwards !important;
+  transition: smooth;
+}
+.shrinkCalendar {
+  animation: shrinkCalendar 0.8s forwards !important;
+  transition: smooth;
+}
+
+@keyframes expandHome {
+  0% {
+    scale: 0.01;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes shrinkHome {
+  0% {
+    scale: 1;
+  }
+
+  100% {
+    scale: 0.001;
+    opacity: 0;
+  }
+}
+
+@keyframes shrinkCalendar {
+  0% {
+    scale: 100;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes expandCalendar {
+  0% {
+    scale: 1;
+  }
+
+  100% {
+    scale: 100;
+  }
 }
