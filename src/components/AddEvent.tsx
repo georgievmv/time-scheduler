@@ -131,11 +131,6 @@ const AddEvent = () => {
       dates = createDatesArray(selectedDate, lastDate, whenToRecur);
     }
 
-    console.time('checkIsReccurenceOverlapped');
-    const result1 = checkIsReccurenceOverlapped(dates, data, newEvent);
-    console.timeEnd('checkIsReccurenceOverlapped');
-    console.log('Result 1:', result1);
-
     //checking for future tasks overlapping with current one
     if (checkIsReccurenceOverlapped(dates, data, newEvent)) {
       toggleModal();
@@ -159,7 +154,6 @@ const AddEvent = () => {
     });
   };
 
-  //sending data ot state data state change
   useEffect(() => {
     const sendData = async () => {
       await firestore('updateDoc', { data: data });
@@ -274,10 +268,11 @@ const AddEvent = () => {
         </Form.Group>
       </div>
       <div className="slider">
-        {filteredData[0]?.event.length &&
-          dataReformer(data, selectedDate).map((elem, i, arr) => {
-            return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
-          })}
+        {filteredData[0]?.event.length
+          ? dataReformer(data, selectedDate).map((elem, i, arr) => {
+              return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
+            })
+          : ''}
 
         <Slider
           onChange={sliderChangeHandler}

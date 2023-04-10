@@ -1,7 +1,9 @@
-import React from "react";
-import { useState } from "react";
-import { EventDate } from "../types/types";
+import React from 'react';
+import { useState } from 'react';
+import { EventDate } from '../types/types';
 type ContextObj = {
+  isCalendarOpened: boolean;
+  setIsCalendarOpened: (arg: boolean) => void;
   setDate: (arg: string) => void;
   selectedDate: string;
   loading: boolean;
@@ -17,13 +19,15 @@ type ContextObj = {
 };
 
 export const Context = React.createContext<ContextObj>({
+  isCalendarOpened: true,
+  setIsCalendarOpened: (arg: boolean) => {},
   setDate: (arg: string) => {},
-  selectedDate: "",
+  selectedDate: '',
   loading: false,
   setIsLoading: (arg: boolean) => {},
   adding: false,
   setAdding: () => {},
-  uid: "",
+  uid: '',
   onLogout: () => {},
   onLogin: (arg: string) => {},
   isLoggedIn: false,
@@ -32,17 +36,18 @@ export const Context = React.createContext<ContextObj>({
 });
 
 const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
+  const [isCalendarOpened, setIsCalendarOpened] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [data, setData] = useState<EventDate[] | []>([]);
-  const [uid, setUid] = useState<string>("");
+  const [uid, setUid] = useState<string>('');
   const [adding, setAdding] = useState(false);
   const [loading, setIsLoading] = useState(false);
   const today = `${new Date().getFullYear()}-${
     new Date().getMonth().toString().length === 1
-      ? "0" + (new Date().getMonth() + 1)
+      ? '0' + (new Date().getMonth() + 1)
       : new Date().getMonth() + 1
   }-${
-    new Date().getDate().toString().length === 1 ? "0" + new Date().getDate() : new Date().getDate()
+    new Date().getDate().toString().length === 1 ? '0' + new Date().getDate() : new Date().getDate()
   }`;
   //TODO:move up with other states
   const [selectedDate, setDate] = useState(today);
@@ -52,10 +57,12 @@ const ContextProvider: React.FC<{ children: React.ReactNode }> = (props) => {
   };
   const onLogout = () => {
     setIsLoggedIn(false);
-    setUid("");
+    setUid('');
   };
 
   const contextValue = {
+    isCalendarOpened,
+    setIsCalendarOpened,
     setDate,
     selectedDate,
     loading,
