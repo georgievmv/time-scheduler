@@ -149,13 +149,13 @@ const Calendar: React.FC<{
       <div className="calendar">
         {days.map((day, i) => (
           <Card
-            className="notClicked m-1"
+            className="notClicked"
             id={day.toString()}
             onClick={calendarCloseHandler}
             style={
               typeof day !== 'number'
-                ? { visibility: 'hidden' }
-                : { height: '60px', paddingLeft: '3px' }
+                ? { visibility: 'hidden', margin: '2px' }
+                : { height: '60px', paddingLeft: '3px', margin: '2px', cursor: 'pointer' }
             }
             border={dayBorderColor(i)}
             key={day}
