@@ -9,7 +9,6 @@ export const openCalendar = (date: string) => {
   document.getElementById(day)?.classList.remove('invisible');
   document.getElementById(day)?.classList.add('shrinkCalendar');
   setTimeout(() => {
-    document.getElementById(day)?.classList.remove('shrinkCalendar');
     document.querySelector('.daysOfTheWeek')?.classList.remove('invisible');
     document.querySelector('.calendar-heading')?.classList.remove('invisible');
     document
@@ -22,6 +21,8 @@ export const openCalendar = (date: string) => {
 };
 
 export const closeCalendar = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  document.querySelector('.shrinkCalendar')?.classList.remove('shrinkCalendar');
+
   document.getElementById(event.currentTarget.id)?.classList.add('expandCalendar');
   document.getElementById(event.currentTarget.id)?.classList.remove('notClicked');
   document
