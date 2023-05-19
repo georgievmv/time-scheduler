@@ -102,11 +102,7 @@ const HomePage: React.FC<{
             </Row>
             <Row>
               <Col xl={6} m={6} sm={6} xs={12}>
-                <Button
-                  disabled={!data.length}
-                  className="mt-3 w-50"
-                  onClick={openCalendarClickHandler}
-                >
+                <Button className="mt-3 w-50" onClick={openCalendarClickHandler}>
                   <img
                     style={{ marginRight: '0.5rem', height: '20px' }}
                     src={calendarIcon}

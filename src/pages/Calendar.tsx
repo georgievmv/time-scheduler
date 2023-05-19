@@ -117,7 +117,8 @@ const Calendar: React.FC<{
       i == 34
     ) {
       return 'danger';
-    } else if (today === arrayWithDatesFromMonth[i].day) {
+    }
+    if (today === arrayWithDatesFromMonth[i].day) {
       return 'success';
     } else {
       return 'primary';
