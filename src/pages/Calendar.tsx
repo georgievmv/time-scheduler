@@ -105,20 +105,20 @@ const Calendar: React.FC<{
   const dayBorderColor = (i: number) => {
     const today = fromDateToString(new Date());
     if (
-      i === 5 ||
-      i === 6 ||
-      i === 12 ||
-      i == 13 ||
-      i === 19 ||
-      i === 20 ||
-      i === 26 ||
-      i == 27 ||
-      i === 33 ||
-      i == 34
+      (i === 5 ||
+        i === 6 ||
+        i === 12 ||
+        i === 13 ||
+        i === 19 ||
+        i === 20 ||
+        i === 26 ||
+        i === 27 ||
+        i === 33 ||
+        i === 34) &&
+      today !== arrayWithDatesFromMonth[i].day
     ) {
       return 'danger';
-    }
-    if (today === arrayWithDatesFromMonth[i].day) {
+    } else if (today === arrayWithDatesFromMonth[i].day) {
       return 'success';
     } else {
       return 'primary';

@@ -1,19 +1,19 @@
-import React from "react";
-import { Button, Card } from "react-bootstrap";
-import { useContext, useState } from "react";
-import { Context } from "../store/app-context";
-import { timeTransformer } from "../utils/timeTransformer";
-import useFireStore from "../hooks/useFireStore";
-import { EventDate } from "../types/types";
-import { toast } from "react-toastify";
-import WarningModal from "./WarningModal";
-import { dataReformer } from "../utils/reformDataForBar";
+import React from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { useContext, useState } from 'react';
+import { Context } from '../store/app-context';
+import { timeTransformer } from '../utils/timeTransformer';
+import useFireStore from '../hooks/useFireStore';
+import { EventDate } from '../types/types';
+import { toast } from 'react-toastify';
+import WarningModal from './WarningModal';
+import { dataReformer } from '../utils/reformDataForBar';
 
 const EventList: React.FC = () => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [isShowAllEventModal, setIsShowAllEventModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedId, setSelectedId] = useState('');
   const firestore = useFireStore();
   const { selectedDate, data, setData } = useContext(Context);
   const toggleEventModalShow = () => setIsShowModal(!isShowModal);
@@ -29,7 +29,7 @@ const EventList: React.FC = () => {
   };
 
   const sendData = async (arg: EventDate[]) => {
-    await firestore("updateDoc", { data: arg });
+    await firestore('updateDoc', { data: arg });
   };
 
   // deleting all event occurences
@@ -43,6 +43,7 @@ const EventList: React.FC = () => {
     });
     setData(newData);
     sendData(newData);
+    toast.warning("You've deleted an event");
     toggleAllEventModalShow();
   };
   const onDeclineDeleteAllEventHandler = () => {
@@ -91,9 +92,9 @@ const EventList: React.FC = () => {
             id={elem.id}
             onClick={onClickHandler}
             key={elem.id}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
             className="m-3"
-            border={elem.recurrence !== "no" ? "secondary" : "success"}
+            border={elem.recurrence !== 'no' ? 'secondary' : 'success'}
           >
             <Card.Body>
               <Card.Title>{elem.title}</Card.Title>
@@ -102,7 +103,7 @@ const EventList: React.FC = () => {
               )}`}</Card.Text>
             </Card.Body>
             {deleting && selectedId === elem.id.toString() && (
-              <div style={{ display: "flex" }}>
+              <div style={{ display: 'flex' }}>
                 <Button
                   id="delete-event"
                   className="delete-button"
@@ -112,7 +113,7 @@ const EventList: React.FC = () => {
                 >
                   Delete
                 </Button>
-                {elem.recurrence !== "no" && (
+                {elem.recurrence !== 'no' && (
                   <Button
                     id="delete-instance"
                     className="delete-button"
