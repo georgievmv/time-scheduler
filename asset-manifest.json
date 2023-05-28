@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/time-scheduler/static/css/main.336436b4.css",
-    "main.js": "/time-scheduler/static/js/main.05509bdb.js",
+    "main.js": "/time-scheduler/static/js/main.1c149f09.js",
     "index.html": "/time-scheduler/index.html",
     "static/media/pie-chart-fill.svg": "/time-scheduler/static/media/pie-chart-fill.881a57161672e2652e342b63010364ae.svg",
     "main.336436b4.css.map": "/time-scheduler/static/css/main.336436b4.css.map",
-    "main.05509bdb.js.map": "/time-scheduler/static/js/main.05509bdb.js.map"
+    "main.1c149f09.js.map": "/time-scheduler/static/js/main.1c149f09.js.map"
   },
   "entrypoints": [
     "static/css/main.336436b4.css",
-    "static/js/main.05509bdb.js"
+    "static/js/main.1c149f09.js"
   ]
 }
