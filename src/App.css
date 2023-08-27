@@ -152,7 +152,14 @@
 .shrinkCalendar {
   animation: shrinkCalendar 0.8s forwards !important;
 }
-
+@media (max-width: 400px) {
+  .calendar-day {
+    font-size: 0.7rem;
+  }
+  .calendar-day-has-event {
+    font-size: 0.7rem;
+  }
+}
 @keyframes expandHome {
   0% {
     scale: 0.01;

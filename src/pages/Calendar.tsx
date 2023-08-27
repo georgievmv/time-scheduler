@@ -130,7 +130,11 @@ const Calendar: React.FC<{
         {monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear()}
       </h1>
       <div className="buttons">
-        <Button className="w-25" onClick={monthMinusChangeHandler}>
+        <Button
+          className="w-25"
+          style={{ minWidth: 'fit-content' }}
+          onClick={monthMinusChangeHandler}
+        >
           Previous
         </Button>
 
@@ -156,13 +160,24 @@ const Calendar: React.FC<{
             style={
               typeof day !== 'number'
                 ? { visibility: 'hidden', margin: '2px' }
-                : { height: '60px', paddingLeft: '3px', margin: '2px', cursor: 'pointer' }
+                : {
+                    aspectRatio: '1/1',
+                    minHeight: '2rem',
+                    paddingLeft: '3px',
+                    margin: '2px',
+                    cursor: 'pointer',
+                    display: 'block',
+                  }
             }
             border={dayBorderColor(i)}
             key={day}
           >
-            {day}
-            {datesWithEvents.find((date) => date.id === day) && <p>...</p>}
+            <p className="calendar-day" style={{ marginBottom: '0px', height: 'fit-content' }}>
+              {day}
+            </p>
+            {datesWithEvents.find((date) => date.id === day) && (
+              <p className="calendar-day-has-event">...</p>
+            )}
           </Card>
         ))}
       </div>
