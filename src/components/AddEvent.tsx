@@ -177,7 +177,7 @@ const AddEvent = () => {
         onDecline={declineReplaceHandler}
       />
       <Form.Group className="my-3">
-        <Form.Label>Event title</Form.Label>
+        <Form.Label>Event title:</Form.Label>
         <Form.Control
           placeholder="Enter event title here"
           onChange={(e) => {
