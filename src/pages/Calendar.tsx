@@ -10,16 +10,14 @@ import useFireStore from '../hooks/useFireStore';
 const Calendar: React.FC<{
   setIsHomeOpened: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setIsHomeOpened }) => {
-  const { setIsCalendarOpened, setDate, selectedDate, data, setIsLoading, setData } =
+  const { setIsCalendarOpened, setDate, selectedDate, data, setData } =
     useContext(Context);
   const [currentDate, setCurrentDate] = useState(new Date(selectedDate));
   const firestore = useFireStore();
   useEffect(() => {
     const getData = async () => {
-      setIsLoading(true);
       const response = await firestore('getDoc');
       setData(response.data().data);
-      setIsLoading(false);
     };
     if (data.length === 0) {
       getData();
@@ -32,7 +30,7 @@ const Calendar: React.FC<{
     0
   ).getDate();
   const firstDayOfTheMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const emptyDaysToAddToAlignCalendar = firstDayOfTheMonth.getDay() - 1;
+  let emptyDaysToAddToAlignCalendar = (firstDayOfTheMonth.getDay() - 1 + 7) % 7;
   let emptySpace = [];
   const monthNames = [
     'January',
@@ -88,11 +86,10 @@ const Calendar: React.FC<{
   const arrayWithDatesFromMonth = days.map((elem) => {
     return {
       id: elem,
-      day: `${currentDate.getFullYear()}-${
-        (currentDate.getMonth() + 1).toString().length === 1
-          ? '0' + (currentDate.getMonth() + 1)
-          : currentDate.getMonth()
-      }-${elem.toString().length === 1 ? '0' + elem : elem}`,
+      day: `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().length === 1
+        ? '0' + (currentDate.getMonth() + 1)
+        : currentDate.getMonth()
+        }-${elem.toString().length === 1 ? '0' + elem : elem}`,
     };
   });
   const datesWithEvents = arrayWithDatesFromMonth.filter((date) => {
@@ -161,13 +158,13 @@ const Calendar: React.FC<{
               typeof day !== 'number'
                 ? { visibility: 'hidden', margin: '2px' }
                 : {
-                    aspectRatio: '1/1',
-                    minHeight: '2rem',
-                    paddingLeft: '3px',
-                    margin: '2px',
-                    cursor: 'pointer',
-                    display: 'block',
-                  }
+                  aspectRatio: '1/1',
+                  minHeight: '2rem',
+                  paddingLeft: '3px',
+                  margin: '2px',
+                  cursor: 'pointer',
+                  display: 'block',
+                }
             }
             border={dayBorderColor(i)}
             key={day}

@@ -49,6 +49,7 @@ const HomePage: React.FC<{
     } catch (e: any) {
       toast.error(e.message);
     }
+    setIsHomeOpened(false)
   };
 
   const addNewTaskButtonHandler = () => {

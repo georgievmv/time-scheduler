@@ -16,9 +16,6 @@ import useFireStore from './hooks/useFireStore';
 
 function App() {
   const {
-    data,
-    setData,
-    setIsLoading,
     onLogin,
     isCalendarOpened,
     isLoggedIn,
@@ -28,13 +25,12 @@ function App() {
   const [isHomeOpened, setIsHomeOpened] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
   }, []);
   onAuthStateChanged(auth, (user) => {
     if (user) {
       onLogin(user.uid);
+
     }
-    setIsLoading(false);
   });
   useEffect(() => {
     openCalendar(selectedDate);
@@ -55,6 +51,7 @@ function App() {
   useEffect(() => {
     document.getElementById('home-container')?.classList.add('home-already-expanded');
   }, [adding]);
+
 
   return (
     <div className="app">

@@ -4,13 +4,12 @@
 
 .app {
   display: flex;
-  margin-top: 0rem;
+  margin-top: -3rem;
   justify-content: center;
   margin-bottom: 0rem;
   height: fit-content;
   height: 100vh;
   position: relative;
-  overflow: hidden;
 }
 
 .home-container {

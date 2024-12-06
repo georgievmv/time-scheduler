@@ -168,7 +168,7 @@ const AddEvent = () => {
   }, [data]);
 
   return (
-    <Form onSubmit={formSubmitHandler} className="home-page-container my-4">
+    <Form onSubmit={formSubmitHandler} className="home-page-container my-5">
       <WarningModal
         show={isRecurringOverlapping}
         title="You have an event in the future in the same timespan"
@@ -270,8 +270,8 @@ const AddEvent = () => {
       <div className="slider">
         {filteredData[0]?.event.length
           ? dataReformer(data, selectedDate).map((elem, i, arr) => {
-              return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
-            })
+            return <BarElement key={i} className="taken-hours" elem={elem} i={i} arr={arr} />;
+          })
           : ''}
 
         <Slider
